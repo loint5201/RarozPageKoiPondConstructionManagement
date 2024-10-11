@@ -1,4 +1,4 @@
-﻿@page
+﻿@page "/dang-nhap-dang-ky"
 @model KoiPondConstructionManagement.Pages.LoginRegisterModel
 @{
 }
@@ -62,3 +62,21 @@
     </div>
 </div>
 <!-- End Login Register Area -->
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+          // check trên url nếu có #login thì active tab login, ngược lại active tab register
+            if (window.location.href.indexOf("#login") > -1) {
+                $('.login').addClass('active');
+                $('.register').removeClass('active');
+                $('#login').addClass('in active');
+                $('#register').removeClass('in active');
+            } else {
+                $('.register').addClass('active');
+                $('.login').removeClass('active');
+                $('#register').addClass('in active');
+                $('#login').removeClass('in active');
+            }
+        });
+    </script>
+}
