@@ -1,0 +1,64 @@
+﻿@page
+@model KoiPondConstructionManagement.Pages.LoginRegisterModel
+@{
+}
+
+<!-- Start Login Register Area -->
+<div class="htc__login__register bg__white ptb--150">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3">
+                <ul class="login__register__menu" role="tablist">
+                    <li role="presentation" class="login active"><a href="#login" role="tab" data-toggle="tab">Đăng nhập</a></li>
+                    <li role="presentation" class="register"><a href="#register" role="tab" data-toggle="tab">Đăng ký</a></li>
+                </ul>
+            </div>
+        </div>
+        <!-- Start Login Register Content -->
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3">
+                <div class="htc__login__register__wrap">
+                    <!-- Hiển thị tổng hợp lỗi cho form đăng nhập -->
+                    @if (Model.ModelState.ErrorCount > 0)
+                    {
+                            <div asp-validation-summary="All" class="alert alert-danger validation-summary-errors" role="alert" data-valmsg-summary="true"></div>
+                    }
+                    <!-- Start Single Content cho form đăng nhập -->
+                    <form id="login" role="tabpanel" class="single__tabs__panel tab-pane fade in active" method="post" asp-page-handler="Login">
+                        <div class="login">
+                            <input asp-for="LoginModel.Email" type="text" placeholder="Email*" />
+                            <input asp-for="LoginModel.Password" type="password" placeholder="Mật khẩu*" />
+                        </div>
+                        <div class="tabs__checkbox">
+                            <input type="checkbox" asp-for="LoginModel.RememberMe" />
+                            <span> Ghi nhớ đăng nhập</span>
+                            <span class="forget"><a href="#">Quên mật khẩu?</a></span>
+                        </div>
+                        <div class="htc__login__btn mt--30">
+                            <button type="submit">Đăng nhập</button>
+                        </div>
+                    </form>
+                    <!-- End Single Content -->
+
+                    <!-- Start Single Content cho form đăng ký -->
+                    <form id="register" role="tabpanel" class="single__tabs__panel tab-pane fade" method="post" asp-page-handler="Register">
+                        <div class="login">
+                            <input asp-for="RegisterModel.FullName" placeholder="Họ và tên*" />
+                            <input asp-for="RegisterModel.Email" placeholder="Email*" />
+                            <input asp-for="RegisterModel.Password" type="password" placeholder="Mật khẩu*" />
+                            <input asp-for="RegisterModel.PhoneNumber" placeholder="Số điện thoại*" />
+                            <input asp-for="RegisterModel.Address" placeholder="Địa chỉ*" />
+                        </div>
+                        <div class="htc__login__btn">
+                            <button type="submit">Đăng ký</button>
+                        </div>
+                    </form>
+                    <!-- End Single Content -->
+                </div>
+
+            </div>
+        </div>
+        <!-- End Login Register Content -->
+    </div>
+</div>
+<!-- End Login Register Area -->

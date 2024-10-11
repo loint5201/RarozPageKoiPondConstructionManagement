@@ -1,0 +1,23 @@
+﻿/*--------------------------------------------------------------
+  Template Name: Simply Construction HTML Template.
+  Template URI: #
+  Description: Simply Construction is a unique website template designed in HTML with a simple & beautiful look. There is an excellent solution for creating clean, wonderful and trending material design corporate, corporate any other purposes websites.
+  Author: DevItems
+  Version: 1.0
+---------------------------------------------------------------*/
+
+/* ----------------------------------------------------
+	You can put your custom css code here: 
+-------------------------------------------------------*/
+
+.validation-summary-errors {
+    margin-bottom: 20px; /* Khoảng cách dưới thông báo lỗi */
+}
+
+.validation-summary-errors ul {
+    padding-left: 0; /* Bỏ lề trái cho ul */
+}
+
+.validation-summary-errors li {
+    margin-bottom: 5px; /* Khoảng cách giữa các thông báo lỗi */
+}
