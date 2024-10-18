@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces;
 using Domain.Interfaces;
+using System.Linq.Expressions;
 
 namespace Application.Services
 {
@@ -12,9 +13,14 @@ namespace Application.Services
             _repository = repository;
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public virtual async Task<IEnumerable<T>> GetByCondition(Expression<Func<T, bool>> predicate = null,
+                                            Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
+                                            int? skip = null,
+                                            int? take = null,
+                                            bool disableTracking = true,
+                                            params Expression<Func<T, object>>[] includes)
         {
-            return await _repository.GetAllAsync();
+            return await _repository.GetByCondition(predicate, orderBy, skip, take, disableTracking, includes);
         }
 
         public async Task<T> GetByIdAsync(int id)

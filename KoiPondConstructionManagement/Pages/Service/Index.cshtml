@@ -1,0 +1,117 @@
+﻿@page "/dich-vu"
+@model KoiPondConstructionManagement.Pages.Service.IndexModel
+
+<!-- End Header Style -->
+<!-- Start Bradcaump area -->
+<div class="ht__bradcaump__area" data--black__overlay="6" style="background: rgba(0, 0, 0, 0) url('/images/bg/5.jpg') no-repeat scroll center center / cover;">
+    <div class="ht__bradcaump__wrap">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="bradcaump__inner text-center">
+                        <h2 class="bradcaump-title">Dịch vụ vệ sinh, chăm sóc, bảo dưỡng hồ cá</h2>
+                        <nav class="bradcaump-inner">
+                            <a class="breadcrumb-item" asp-page="/Index">Trang chủ</a>
+                            <span class="brd-separetor">-</span>
+                            <a class="breadcrumb-item" asp-page="/Service">Dịch vụ</a>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Bradcaump area -->
+<!-- Start Blog Area -->
+<section class="htc__blog__details__page ptb--150 bg__white">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 col-lg-3 col-sm-12 col-xs-12">
+                <div class="htc__page__sidebar">
+                    <!-- Start Single -->
+                    <div class="htc__category bg__gray">
+                        <h2 class="sidebar__title">Dịch vụ</h2>
+                        <ul class="cat__list">
+                            @foreach (var service in Model.MaintenanceService)
+                            {
+                                <li class="@(service.ServiceId == Model.Id ? "active" : "")">
+                                    <a asp-page="/Service/Index" asp-route-id="@service.ServiceId">@service.ServiceName</a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                   @*  <!-- End Single -->
+                    <!-- Start Single -->
+                    <div class="htc__broc bg__gray sidebar__separator">
+                        <h2 class="sidebar__title">OUR BROCHURE</h2>
+                        <ul class="brocure__list">
+                            <li><a href="#"><i class="fa fa-file-pdf-o"></i>DOWNLOAD PDF BROCHURE</a></li>
+                            <li><a href="#"><i class="fa fa-wordpress"></i>DOWNLOAD DOC BROCHURE</a></li>
+                        </ul>
+                    </div>
+                    <!-- End Single --> *@
+                </div>
+            </div>
+            <div class="col-md-9 col-lg-9 col-sm-12 col-xs-12 smt-40 xmt-40">
+                <div class="htc__single__service">
+                    <div class="htc__single__service__tab">
+                        <div class="ht-portfolio-pic-show">
+                            <div class="ht-portfolio-full-image tab-content">
+                                <div role="tabpanel" class="tab-pane fade in active" id="img-tab-1">
+                                    <img src="@Model.MaintenanceServiceSelected.ServiceImage" alt="full-image">
+                                </div>
+                                @* <div role="tabpanel" class="tab-pane fade" id="img-tab-2">
+                                    <img src="~/images/blog/big-images/3.jpg" alt="full-image">
+                                </div>
+                                <div role="tabpanel" class="tab-pane fade" id="img-tab-3">
+                                    <img src="~/images/blog/big-images/2.jpg" alt="full-image">
+                                </div>
+                                <div role="tabpanel" class="tab-pane fade" id="img-tab-4">
+                                    <img src="~/images/blog/big-images/1.jpg" alt="full-image">
+                                </div> *@
+                            </div>
+                        </div>
+                       @*  <!-- Start Small images -->
+                        <div class="ht__service__small__image nav nav-tabs clearfix">
+                            <ul role="tablist" class="prodict-det-small  clearfix">
+                                <li role="presentation" class="pot-small-img img-tab-1 active">
+                                    <a href="#img-tab-1" role="tab" data-toggle="tab">
+                                        <img src="@Model.MaintenanceServiceSelected.ServiceImage" alt="small-image">
+                                    </a>
+                                </li>
+                                <li role="presentation" class="pot-small-img img-tab-2">
+                                    <a href="#img-tab-2" role="tab" data-toggle="tab">
+                                        <img src="~/images/service/small-img/2.jpg" alt="small-image">
+                                    </a>
+                                </li>
+                                <li role="presentation" class="pot-small-img img-tab-3 xmt-20">
+                                    <a href="#img-tab-3" role="tab" data-toggle="tab">
+                                        <img src="~/images/service/small-img/3.jpg" alt="small-image">
+                                    </a>
+                                </li>
+                                <li role="presentation" class="pot-small-img img-tab-4 xmt-20">
+                                    <a href="#img-tab-4" role="tab" data-toggle="tab">
+                                        <img src="~/images/service/small-img/4.jpg" alt="small-image">
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <!-- End Small images --> *@
+                    </div>
+                    <div class="htc__service__dtl">
+                        <!-- Start Single Service -->
+                        <div class="htc__ser__dtl">
+                            <h2 class="title__line--4">@Model.MaintenanceServiceSelected.ServiceName</h2>
+                            <h5 class="title__line--5">Chi phí: @Model.MaintenanceServiceSelected.Price</h5>
+                            <div class="htc__bst__btn">
+                                <a class="htc__btn" asp-page="/Service/Request" asp-route-maintenanceServiceId="@Model.Id">Đặt dịch vụ</a>
+                            </div>
+                            <p class="mt--30">Mô tả: @Model.MaintenanceServiceSelected.Description</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End Blog Area -->

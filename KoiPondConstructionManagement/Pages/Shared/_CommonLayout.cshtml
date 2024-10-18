@@ -3,9 +3,13 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - KoiPondConstructionManagement</title>
+    <title>@ViewData["Title"] - Giải Pháp Toàn Diện Cho Hồ Cá Koi</title>
     @* <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" /> *@
     <link rel="stylesheet" href="~/css/bootstrap.min.css">
+    <!-- Sweet alert2 css -->
+    <link rel="stylesheet" href="~/lib/sweetalert2/sweetalert2.min.css" />
+    <!-- datatables css -->
+    <link rel="stylesheet" href="~/lib/datatables/datatables.min.css" />
     <!-- Owl Carousel  main css -->
     <link rel="stylesheet" href="~/css/owl.carousel.min.css">
     <link rel="stylesheet" href="~/css/owl.theme.default.min.css">
@@ -41,15 +45,15 @@
                                 <ul class="login-register">
                                     @if (!User.Identity.IsAuthenticated)
                                     {
-                                            <li><a asp-page="/LoginRegister">Đăng nhập</a></li>
-                                            <li class="separator">/</li>
-                                            <li><a asp-page="/LoginRegister#register">Đăng ký</a></li>
+                                        <li><a asp-page="/LoginRegister">Đăng nhập</a></li>
+                                        <li class="separator">/</li>
+                                        <li><a asp-page="/LoginRegister">Đăng ký</a></li>
                                     }
                                     else
                                     {
-                                            <li><a href="#">Xin chào, @User.Identity.Name!</a></li>
-                                            <li class="separator">/</li>
-                                            <li><a href="/Logout">Đăng xuất</a></li>
+                                        <li><a href="#">Xin chào, @User.Identity.Name!</a></li>
+                                        <li class="separator">/</li>
+                                        <li><a href="/Logout">Đăng xuất</a></li>
                                     }
                                 </ul>
                                 @* <div class="heaher__top__btn">
@@ -79,40 +83,51 @@
                                         <a asp-page="/Index">Trang chủ</a>
                                     </li>
                                     <li><a asp-page="/About">Giới thiệu</a></li>
-                                    <li><a asp-page="/Service">Dịch vụ</a></li>
+                                    <li><a asp-page="/Service/Index">Dịch vụ</a></li>
                                     <li class="drop">
                                         <a asp-page="/Project/Index">Dự án</a>
                                         @* <ul class="dropdown">
-                                            <li><a asp-page="/ProjectsOne">Projects One</a></li>
-                                            <li><a asp-page="/ProjectsTwo">Projects Two</a></li>
-                                            <li><a asp-page="/ProjectsThree">Projects Three</a></li>
+                                        <li><a asp-page="/ProjectsOne">Projects One</a></li>
+                                        <li><a asp-page="/ProjectsTwo">Projects Two</a></li>
+                                        <li><a asp-page="/ProjectsThree">Projects Three</a></li>
                                         </ul> *@
                                     </li>
                                     @* <li class="drop">
-                                        <a href="#">pages</a>
-                                        <ul class="dropdown">
-                                            <li><a asp-page="/Service">Service</a></li>
-                                            <li><a asp-page="/SingleService">Single Service</a></li>
-                                            <li><a asp-page="/ProjectsOne">Projects One</a></li>
-                                            <li><a asp-page="/ProjectsTwo">Projects Two</a></li>
-                                            <li><a asp-page="/ProjectsThree">Projects Three</a></li>
-                                            <li><a asp-page="/SingleProject">Single Project</a></li>
-                                            <li><a asp-page="/Blog">Blog</a></li>
-                                            <li><a asp-page="/BlogOneColumn">Blog One Column</a></li>
-                                            <li><a asp-page="/BlogTwoColumn">Blog Two Column</a></li>
-                                            <li><a asp-page="/BlogDetails">Blog Details</a></li>
-                                            <li><a asp-page="/LoginRegister">Log in & Register</a></li>
-                                        </ul>
+                                    <a href="#">pages</a>
+                                    <ul class="dropdown">
+                                    <li><a asp-page="/Service">Service</a></li>
+                                    <li><a asp-page="/SingleService">Single Service</a></li>
+                                    <li><a asp-page="/ProjectsOne">Projects One</a></li>
+                                    <li><a asp-page="/ProjectsTwo">Projects Two</a></li>
+                                    <li><a asp-page="/ProjectsThree">Projects Three</a></li>
+                                    <li><a asp-page="/SingleProject">Single Project</a></li>
+                                    <li><a asp-page="/Blog">Blog</a></li>
+                                    <li><a asp-page="/BlogOneColumn">Blog One Column</a></li>
+                                    <li><a asp-page="/BlogTwoColumn">Blog Two Column</a></li>
+                                    <li><a asp-page="/BlogDetails">Blog Details</a></li>
+                                    <li><a asp-page="/LoginRegister">Log in & Register</a></li>
+                                    </ul>
                                     </li> *@
                                     <li class="drop">
                                         <a asp-page="/Blog/Index">BLOG</a>
                                         @* <ul class="dropdown">
-                                            <li><a asp-page="/Blog">Blog</a></li>
-                                            <li><a asp-page="/BlogOneColumn">Blog One Column</a></li>
-                                            <li><a asp-page="/BlogTwoColumn">Blog Two Column</a></li>
+                                        <li><a asp-page="/Blog">Blog</a></li>
+                                        <li><a asp-page="/BlogOneColumn">Blog One Column</a></li>
+                                        <li><a asp-page="/BlogTwoColumn">Blog Two Column</a></li>
                                         </ul> *@
                                     </li>
                                     <li><a asp-page="/Contact">Liên hệ</a></li>
+                                    @if (User.Identity.IsAuthenticated)
+                                    {
+                                        <li class="drop">
+                                            <a href="#">Quản Lý</a>
+                                            <ul class="dropdown">
+                                                <li><a asp-page="/Service/Request">Đặt dịch vụ</a></li>
+                                                <li><a asp-page="/User/MyService">Quản lý dịch vụ</a></li>
+                                                <li><a asp-page="/ProjectsThree" is-development="true">Lịch Sử Dịch Vụ</a></li>
+                                            </ul>
+                                        </li>
+                                    }
                                 </ul>
                             </nav>
                             <div class="mobile-menu clearfix visible-xs visible-sm">
@@ -126,26 +141,26 @@
                                         <li>
                                             <a asp-page="/Project/Index">Dự án</a>
                                             @* <ul>
-                                                <li><a asp-page="/ProjectsOne">Projects One</a></li>
-                                                <li><a asp-page="/ProjectsTwo">Projects Two</a></li>
-                                                <li><a asp-page="/ProjectsThree">Projects Three</a></li>
+                                            <li><a asp-page="/ProjectsOne">Projects One</a></li>
+                                            <li><a asp-page="/ProjectsTwo">Projects Two</a></li>
+                                            <li><a asp-page="/ProjectsThree">Projects Three</a></li>
                                             </ul> *@
                                         </li>
-                                       @*  <li>
-                                            <a href="#">PAGES</a>
-                                            <ul>
-                                                <li><a asp-page="/Service">Service</a></li>
-                                                <li><a asp-page="/SingleService">Single Service</a></li>
-                                                <li><a asp-page="/ProjectsOne">Projects One</a></li>
-                                                <li><a asp-page="/ProjectsTwo">Projects Two</a></li>
-                                                <li><a asp-page="/ProjectsThree">Projects Three</a></li>
-                                                <li><a asp-page="/SingleProject">Single Project</a></li>
-                                                <li><a asp-page="/Blog">Blog</a></li>
-                                                <li><a asp-page="/BlogOneColumn">Blog One Column</a></li>
-                                                <li><a asp-page="/BlogTwoColumn">Blog Two Column</a></li>
-                                                <li><a asp-page="/BlogDetails">Blog Details</a></li>
-                                                <li><a asp-page="/LoginRegister">Log in & Register</a></li>
-                                            </ul>
+                                        @*  <li>
+                                        <a href="#">PAGES</a>
+                                        <ul>
+                                        <li><a asp-page="/Service">Service</a></li>
+                                        <li><a asp-page="/SingleService">Single Service</a></li>
+                                        <li><a asp-page="/ProjectsOne">Projects One</a></li>
+                                        <li><a asp-page="/ProjectsTwo">Projects Two</a></li>
+                                        <li><a asp-page="/ProjectsThree">Projects Three</a></li>
+                                        <li><a asp-page="/SingleProject">Single Project</a></li>
+                                        <li><a asp-page="/Blog">Blog</a></li>
+                                        <li><a asp-page="/BlogOneColumn">Blog One Column</a></li>
+                                        <li><a asp-page="/BlogTwoColumn">Blog Two Column</a></li>
+                                        <li><a asp-page="/BlogDetails">Blog Details</a></li>
+                                        <li><a asp-page="/LoginRegister">Log in & Register</a></li>
+                                        </ul>
                                         </li> *@
                                         <li>
                                             <a asp-page="/Blog">BLOG</a>
@@ -173,7 +188,6 @@
             <!-- End Mainmenu Area -->
         </div>
         <!-- End Header Style -->
-
         @RenderBody()
 
         <!-- Start Footer Area -->
@@ -181,6 +195,7 @@
         </footer>
         <!-- End Footer Area -->
     </div>
+
 
     <!-- jquery latest version -->
     <script src="~/js/vendor/jquery-1.12.0.min.js"></script>
@@ -190,8 +205,13 @@
     <script src="~/js/plugins.js"></script>
     <script src="~/js/slick.min.js"></script>
     <script src="~/js/owl.carousel.min.js"></script>
+
+    <partial name="_ValidationScriptsPartial" />
+
     <!-- Waypoints.min.js. -->
     <script src="~/js/waypoints.min.js"></script>
+    <script src="~/lib/sweetalert2/sweetalert2.min.js"></script>
+    <script src="~/lib/datatables/datatables.min.js"></script>
     <!-- Main js file that contents all jQuery plugins activation. -->
     <script src="~/js/main.js"></script>
 

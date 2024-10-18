@@ -1,4 +1,5 @@
 ﻿
+using Application.Common.Mappings;
 using Application.Interfaces;
 using Application.Services;
 using FluentValidation;
@@ -23,6 +24,7 @@ public static class DependencyInjection
         //});
 
         services.AddAutoMapper(Assembly.GetExecutingAssembly());
+        services.AddAutoMapper(typeof(MappingProfile));
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
         services.AddScoped<IUserService, UserService>();

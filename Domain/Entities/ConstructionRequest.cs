@@ -8,9 +8,13 @@ public partial class ConstructionRequest
 
     public int? DesignId { get; set; }
 
+    public int? MaintenanceServiceId { get; set; }
+
     public string? CustomDesignDescription { get; set; }
 
-    public string Status { get; set; } = null!;
+    public decimal? CostEstimate { get; set; }
+
+    public int? Status { get; set; } = null!;
 
     public DateTime CreatedAt { get; set; }
 
@@ -25,4 +29,6 @@ public partial class ConstructionRequest
     public virtual KoiDesign? Design { get; set; }
 
     public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
+
+    public MaintenanceService? MaintenanceService { get; set; }
 }

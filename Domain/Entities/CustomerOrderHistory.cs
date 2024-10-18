@@ -8,6 +8,10 @@ public partial class CustomerOrderHistory
 
     public int? RequestId { get; set; }
 
+    public int? PaymentMethod { get; set; }
+
+    public int? PaymentStatus { get; set; }
+
     public decimal ActualCost { get; set; }
 
     public DateTime CreatedAt { get; set; }

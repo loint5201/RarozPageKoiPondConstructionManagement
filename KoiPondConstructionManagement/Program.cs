@@ -41,7 +41,12 @@ namespace KoiPondConstructionManagement
 
             app.UseRouting();
             app.UseAuthorization();
-            app.MapRazorPages();
+            // app.MapRazorPages();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapRazorPages();
+                endpoints.MapFallbackToPage("/NotFound/Index"); 
+            });
 
             app.Run();
         }

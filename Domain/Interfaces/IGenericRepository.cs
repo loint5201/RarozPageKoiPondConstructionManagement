@@ -1,4 +1,6 @@
-﻿namespace Domain.Interfaces
+﻿using System.Linq.Expressions;
+
+namespace Domain.Interfaces
 {
     /// <summary>
     /// 
@@ -9,7 +11,12 @@
         /// 
         /// </summary>
         /// <returns></returns>
-        Task<IEnumerable<T>> GetAllAsync();
+        Task<IEnumerable<T>> GetByCondition(Expression<Func<T, bool>> predicate = null,
+                                            Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
+                                            int? skip = null,
+                                            int? take = null,
+                                            bool disableTracking = true,
+                                            params Expression<Func<T, object>>[] includes);
 
         /// <summary>
         /// 

@@ -6,9 +6,9 @@ public partial class ConstructionProcess
 
     public int? RequestId { get; set; }
 
-    public string Step { get; set; } = null!;
+    public int? Step { get; set; } = null!;
 
-    public string Status { get; set; } = null!;
+    public int? Status { get; set; } = null!;
 
     public int? AssignedStaffId { get; set; }
 

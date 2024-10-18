@@ -52,6 +52,7 @@ namespace KoiPondConstructionManagement.Pages
                     new(ClaimTypes.Name, user.FullName),
                     new(ClaimTypes.Email, user.Email),
                     new(ClaimTypes.Role, user.RoleId.ToString()),
+                    new(ClaimTypes.MobilePhone, user.PhoneNumber),
                 };
                 var claimsIdentity = new ClaimsIdentity(claims, "login");
                 var authProperties = new AuthenticationProperties

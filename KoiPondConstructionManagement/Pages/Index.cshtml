@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Home page";
 }
+
 <!-- Start Slider Area -->
 <div class="slider__container">
     <div class="slider__activation__wrap owl-carousel owl-theme">
@@ -15,9 +16,9 @@
                             @* <h4>SCIENCE 1953</h4> *@
                             <h1>THIẾT KẾ VÀ THI CÔNG HỒ CÁ KOI</h1>
                             <p>Chúng tôi cung cấp các dịch vụ về hồ cá koi, từ khảo sát, thiết kế, thi công, bảo dưỡng hồ cá koi. Chúng tôi cam kết mang lại cho khách hàng những sản phẩm và dịch vụ tốt nhất.</p>
-                            <div class="slider__btn">
+                            @* <div class="slider__btn">
                                 <a class="htc__btn" href="contact.html">LIÊN HỆ VỚI CHÚNG TÔI</a>
-                            </div>
+                            </div> *@
                         </div>
                     </div>
                 </div>
@@ -33,9 +34,9 @@
                             @* <h4>SCIENCE 1953</h4> *@
                             <h1>VỆ SINH CHĂM SÓC BẢO DƯỠNG HỒ CÁ</h1>
                             <p>Chúng tôi cung cấp các dịch vụ về hồ cá koi, từ khảo sát, thiết kế, thi công, bảo dưỡng hồ cá koi. Chúng tôi cam kết mang lại cho khách hàng những sản phẩm và dịch vụ tốt nhất.</p>
-                            <div class="slider__btn">
+                            @* <div class="slider__btn">
                                 <a class="htc__btn" href="contact.html">LIÊN HỆ VỚI CHÚNG TÔI</a>
-                            </div>
+                            </div> *@
                         </div>
                     </div>
                 </div>
@@ -46,96 +47,40 @@
 </div>
 <!-- Start Slider Area -->
 <!-- Start Service Area -->
-<section class="htc__service__area bg__white ptb--100">
+<section class="htc__service__area bg__white ptb--100" style="padding-bottom: 0">
     <div class="container">
         <div class="row">
             <div class="service__section__wrap clearfix">
-                <!-- Start Single Service -->
-                <div class="col-sm-6 col-xs-12">
-                    <div class="service foo">
-                        <div class="service__thumb">
-                            <a asp-page="/Service/MaintenanceServices">
-                                <img src="~/images/service/1.jpg" alt="service images" style="width: 100%; height: 250px">
-                            </a>
-                            <div class="service__hover">
-                                <div class="service__action">
-                                    <a asp-page="/Service/MaintenanceServices">Chúng tôi cung cấp dịch vụ toàn diện về lĩnh vực hồ cá koi. Tư vấn khảo sát tại nhà; lên ý tưởng thiết kế, thi công; bàn giao và bảo dưỡng hồ định kỳ.</a>
+                @foreach (var sevice in Model.MaintenanceService)
+                {
+                    <!-- Start Single Service -->
+                    @* col-lg-3 col-sm-4 col-xs-12 *@
+                    <div class="col-sm-4" style="margin-bottom: 16px">
+                        <div class="service foo">
+                            <div class="service__thumb">
+                                <a asp-page="/Service/Index" asp-route-id="@sevice.ServiceId">
+                                    <img src="@sevice.ServiceImage" alt="service images" width="300px" height="220px">
+                                </a>
+                                <div class="service__hover">
+                                    <div class="service__action">
+                                        <a asp-page="/Service/Index" asp-route-id="@sevice.ServiceId">Xem chi tiết</a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="service__details">
-                            <h2><a asp-page="/Service/MaintenanceServices">Thiết kế thi công hồ cá KOI</a></h2>
-                        </div>
-                    </div>
-                </div>
-                <!-- End Single Service -->
-                <!-- Start Single Service -->
-                <div class="col-sm-6 col-xs-12">
-                    <div class="service foo">
-                        <div class="service__thumb">
-                            <a asp-page="/Service/MaintenanceServices">
-                                <img src="~/images/service/2.jpg" alt="service images" style="width: 100%; height: 250px" />
-                            </a>
-                            <div class="service__hover">
-                                <div class="service__action">
-                                    <a asp-page="/Service/MaintenanceServices">Chúng tôi cung cấp các dịch vụ vệ sinh, chăm sóc, bảo dưỡng hồ cá koi. Đảm bảo hồ cá luôn sạch đẹp, cá khỏe mạnh.</a>
-                                </div>
+                            <div class="service__details">
+                                <h2><a asp-page="/Service/Index" asp-route-id="@sevice.ServiceId">@sevice.ServiceName</a></h2>
                             </div>
                         </div>
-                        <div class="service__details">
-                            <h2><a asp-page="/Service/MaintenanceServices">Dịch vụ vệ sinh, chăm sóc, bảo dưỡng hồ cá.</a></h2>
-                        </div>
                     </div>
-                </div>
-                <!-- End Single Service -->
+                    <!-- End Single Service -->
+                }
             </div>
         </div>
     </div>
 </section>
 <!-- End Service Area -->
 <!-- Start Offer Area -->
-<section class="htc__offer__area htc__offer__2 ht__offr--3 bg__gray">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12 col-lg-5 col-sm-12 col-xs-12">
-                <div class="htc__offer__container">
-                    <div class="offer">
-                        <div class="offer__icon">
-                            <img src="~/images/others/icon-2/1.png" alt="icon images">
-                        </div>
-                        <div class="offer__details">
-                            <h2><a href="#">TOP RATED</a></h2>
-                            <p>On the other hand, we denounce with righteous indignation quasi architecto beatae vitae dicta</p>
-                        </div>
-                    </div>
-                    <div class="offer">
-                        <div class="offer__icon">
-                            <img src="~/images/others/icon-2/2.png" alt="icon images">
-                        </div>
-                        <div class="offer__details">
-                            <h2><a href="#">BEST QUALITY</a></h2>
-                            <p>On the other hand, we denounce with righteous indignation quasi architecto beatae vitae dicta</p>
-                        </div>
-                    </div>
-                    <div class="offer">
-                        <div class="offer__icon">
-                            <img src="~/images/others/icon-2/3.png" alt="icon images">
-                        </div>
-                        <div class="offer__details">
-                            <h2><a href="#">LOW COST</a></h2>
-                            <p>On the other hand, we denounce with righteous indignation quasi architecto beatae vitae dicta</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="htc__offer__thumb">
-        <div class="htc__offer__thumb__inner">
-            <img src="~/images/about/1.jpg" alt="offer img">
-        </div>
-    </div>
-</section>
+@Html.Partial("_OfferPartial")
 <!-- End Offer Area -->
 <!-- Start Counter Up Area -->
 <section class="htc__counterup__area ptb--50" style="background: rgba(0, 0, 0, 0) url('/images/bg/3.jpg') no-repeat scroll center center / cover ;">
@@ -325,130 +270,8 @@
     </div>
 </section>
 <!-- End Latest Project Area -->
-<!-- Start Team Area -->
-<section class="htc__team__area ptb--120" data--gray__overlay="9.5" style="background: rgba(0, 0, 0, 0) url('/images/bg/1.jpg') no-repeat fixed center center / cover ;">
-    <div class="htc__team__container">
-        <div class="container">
-            <div class="row">
-                <div class="col-xs-12">
-                    <div class="section__title text-center">
-                        <h2 class="title__line">OUR <span class="text--theme">TEAM</span></h2>
-                        <p>On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire</p>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="htc__team__wrap clearfix mt--30">
-                    <!-- Start Single Team -->
-                    <div class="col-md-3 col-lg-3 col-sm-4 col-xs-12">
-                        <div class="team foo">
-                            <div class="team__inner">
-                                <div class="team__thumb">
-                                    <img src="~/images/team/1.jpg" alt="team image">
-                                </div>
-                                <div class="team__hover__info">
-                                    <ul class="team__social__link">
-                                        <li><a href="#" target="_blank"><i class="fa fa-twitter"></i></a></li>
+@await Html.PartialAsync("_OurTeamPartial")
 
-                                        <li><a href="#" target="_blank"><i class="fa fa-instagram"></i></a></li>
-
-                                        <li><a href="#" target="_blank"><i class="fa fa-facebook"></i></a></li>
-
-                                        <li><a href="#" target="_blank"><i class="fa fa-google-plus"></i></a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="team__details">
-                                <h2><a href="#">STAWART SMITH</a></h2>
-                                <h4>Chief Engineer</h4>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- End Single Team -->
-                    <!-- Start Single Team -->
-                    <div class="col-md-3 col-lg-3 col-sm-4 col-xs-12">
-                        <div class="team foo">
-                            <div class="team__inner">
-                                <div class="team__thumb">
-                                    <img src="~/images/team/2.jpg" alt="team image">
-                                </div>
-                                <div class="team__hover__info">
-                                    <ul class="team__social__link">
-                                        <li><a href="#" target="_blank"><i class="fa fa-twitter"></i></a></li>
-
-                                        <li><a href="#" target="_blank"><i class="fa fa-instagram"></i></a></li>
-
-                                        <li><a href="#" target="_blank"><i class="fa fa-facebook"></i></a></li>
-
-                                        <li><a href="#" target="_blank"><i class="fa fa-google-plus"></i></a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="team__details">
-                                <h2><a href="#">KALVIN MOMEN</a></h2>
-                                <h4>KALVIN MOMEN</h4>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- End Single Team -->
-                    <!-- Start Single Team -->
-                    <div class="col-md-3 col-lg-3 col-sm-4 col-xs-12">
-                        <div class="team foo">
-                            <div class="team__inner">
-                                <div class="team__thumb">
-                                    <img src="~/images/team/3.jpg" alt="team image">
-                                </div>
-                                <div class="team__hover__info">
-                                    <ul class="team__social__link">
-                                        <li><a href="#" target="_blank"><i class="fa fa-twitter"></i></a></li>
-
-                                        <li><a href="#" target="_blank"><i class="fa fa-instagram"></i></a></li>
-
-                                        <li><a href="#" target="_blank"><i class="fa fa-facebook"></i></a></li>
-
-                                        <li><a href="#" target="_blank"><i class="fa fa-google-plus"></i></a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="team__details">
-                                <h2><a href="#">ANDREW SIMONS</a></h2>
-                                <h4>Chief Electicians</h4>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- End Single Team -->
-                    <!-- Start Single Team -->
-                    <div class="col-md-3 col-lg-3 hidden-sm col-xs-12">
-                        <div class="team foo">
-                            <div class="team__inner">
-                                <div class="team__thumb">
-                                    <img src="~/images/team/4.jpg" alt="team image">
-                                </div>
-                                <div class="team__hover__info">
-                                    <ul class="team__social__link">
-                                        <li><a href="#" target="_blank"><i class="fa fa-twitter"></i></a></li>
-
-                                        <li><a href="#" target="_blank"><i class="fa fa-instagram"></i></a></li>
-
-                                        <li><a href="#" target="_blank"><i class="fa fa-facebook"></i></a></li>
-
-                                        <li><a href="#" target="_blank"><i class="fa fa-google-plus"></i></a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="team__details">
-                                <h2><a href="#">MARK TAYLOR</a></h2>
-                                <h4>Chief Engineer</h4>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- End Single Team -->
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-<!-- End Team Area -->
 <!-- Start Testimonial Area -->
 <section class="htc__testimonial__area testimonial__2 ptb--150 bg__white">
     <div class="container">

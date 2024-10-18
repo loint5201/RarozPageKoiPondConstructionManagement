@@ -1,4 +1,5 @@
-﻿@* @page *@
+﻿@using System.Security.Claims
+@* @page *@
 
 <!-- Start Testimonial Area -->
 <section class="htc__testimonial__area ptb--130" data--gray__overlay="9" style="background: rgba(0, 0, 0, 0) url('/images/bg/1.jpg') no-repeat fixed center center / cover ;">
@@ -50,27 +51,42 @@
                         <h2 class="title__line">YÊU CẦU <span class="text--theme">BÁO GIÁ</span></h2>
                         <p>Bạn đang muốn thi công hồ cá Koi cho không gian của mình? Hãy liên hệ ngay với chúng tôi để nhận tư vấn và báo giá chi tiết nhất. Chỉ cần cung cấp một vài thông tin cơ bản, đội ngũ chuyên gia của chúng tôi sẽ nhanh chóng đưa ra phương án thi công và mức giá phù hợp với nhu cầu và ngân sách của bạn. Đừng bỏ lỡ cơ hội sở hữu một hồ cá Koi đẳng cấp và tinh tế cho ngôi nhà của bạn!</p>
                     </div>
-                    <form id="contact-form" action="https://d29u17ylf1ylz9.cloudfront.net/simply-construction/mail-faq.php" method="post">
-                        <div class="clint__comment__form">
-                            <div class="single__cl__form">
-                                <input name="name" type="text" placeholder="Họ và tên">
-                                <input name="email" type="email" placeholder="Email">
-                            </div>
-                            <div class="single__cl__form">
-                                <input name="telephone" type="tel" placeholder="Số điện thoại">
-                                <input name="subject" type="text" placeholder="Tiêu đề">
-                            </div>
-                            <div class="single__cl__message">
-                                <textarea name="message" placeholder="Yêu cầu"></textarea>
-                            </div>
-                            <div class="clint__submit__btn">
-                                <button class="submit htc__btn" type="submit">
-                                    Gửi yêu cầu
-                                </button>
-                            </div>
+                    @if (!User.Identity.IsAuthenticated)
+                    {
+                        <div class="clint__submit__btn">
+                            <a class="submit htc__btn" asp-page="/LoginRegister">
+                                Đăng nhập để thực hiện tính năng
+                            </a>
                         </div>
-                    </form>
-                    <p class="form-messege"></p>
+                    }
+                    else
+                    {
+                        <form id="contact-form" action="https://d29u17ylf1ylz9.cloudfront.net/simply-construction/mail-faq.php" method="post">
+                            <div class="clint__comment__form">
+                                <div class="single__cl__form">
+                                    <input name="name" type="text" placeholder="Họ và tên" value="@User.FindFirst(ClaimTypes.Name)?.Value" disabled readonly>
+                                    <input name="email" type="email" placeholder="Email" value="@User.FindFirst(ClaimTypes.Email)?.Value" disabled readonly>
+                                </div>
+                                <div class="single__cl__form">
+                                    <input name="telephone" type="tel" placeholder="Số điện thoại" value="@User.FindFirst(ClaimTypes.MobilePhone)?.Value" disabled readonly>
+                                    @* <input name="subject" type="text" placeholder="Tiêu đề"> *@
+                                    <select name="service" id="service">
+                                        <option value="construction">Thi công hồ cá Koi</option>
+                                        <option value="maintenance">Bảo dưỡng hồ cá Koi</option>
+                                    </select>
+                                </div>
+                                <div class="single__cl__message">
+                                    <textarea name="message" placeholder="Yêu cầu"></textarea>
+                                </div>
+                                <div class="clint__submit__btn">
+                                    <button class="submit htc__btn" type="submit">
+                                        Gửi yêu cầu
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                        <p class="form-messege"></p>
+                    }
                 </div>
             </div>
         </div>

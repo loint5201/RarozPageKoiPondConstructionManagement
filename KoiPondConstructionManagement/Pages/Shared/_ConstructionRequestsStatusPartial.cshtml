@@ -1,0 +1,28 @@
+﻿@using Domain.Entities
+@using Domain.Enums
+@model ConstructionRequest
+@{
+    string status = "";
+    switch (Model.Status)
+    {
+        case (int)ConstructionRequestsStatus.Pending:
+            status = "Chờ xác nhận";
+            break;
+        case (int)ConstructionRequestsStatus.Approved:
+            status = "Đã xác nhận";
+            break;
+        case (int)ConstructionRequestsStatus.InProgress:
+            status = "Đang thi công";
+            break;
+        case (int)ConstructionRequestsStatus.Completed:
+            status = "Đã hoàn thành";
+            break;
+        case (int)ConstructionRequestsStatus.Rejected:
+            status = "Đã từ chối";
+            break;
+        case (int)ConstructionRequestsStatus.Cancelled:
+            status = "Đã hủy";
+            break;
+    }
+}
+<span class="badge badge-pill badge-primary">@status</span>

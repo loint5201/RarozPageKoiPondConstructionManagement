@@ -1,0 +1,201 @@
+﻿@page
+@model KoiPondConstructionManagement.Pages.Service.RequestModel
+@{
+}
+<style>
+    .ht__bradcaump__wrap {
+        height: 180px;
+    }
+</style>
+<!-- Start Bradcaump area -->
+<div class="ht__bradcaump__area" data--black__overlay="6"
+     style="background: rgba(0, 0, 0, 0) url('/images/bg/5.jpg') no-repeat scroll center center / cover;">
+    <div class="ht__bradcaump__wrap">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="bradcaump__inner text-center">
+                        <h2 class="bradcaump-title">Yêu cầu dịch vụ</h2>
+                        <nav class="bradcaump-inner">
+                            <a class="breadcrumb-item" asp-page="/Index">Trang chủ</a>
+                            <span class="brd-separetor">-</span>
+                            <span class="breadcrumb-item active">Yêu cầu dịch vụ</span>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Bradcaump area -->
+
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="htc__bst__construc">
+                <div class="htc__bst__service text-center mt--30">
+                    <div class="htc__bst__service__inner">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="htc__bst__service__wrap">
+                                    <div class="htc__bst__service__details">
+                                        <h2><a href="#">Yêu cầu dịch vụ</a></h2>
+                                        <p>
+                                            Chúng tôi sẽ liên hệ với bạn ngay sau khi nhận được yêu cầu của bạn. Hãy điền
+                                            đầy đủ thông tin để chúng tôi có thể hỗ trợ bạn tốt nhất.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt--30"></div>
+
+                <form method="post">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="name">Họ và tên</label>
+                                <input type="text" class="form-control" id="name" name="name" required disabled
+                                       value="@Model.CurrentUser?.FullName">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="phone">Số điện thoại</label>
+                                <input type="text" class="form-control" id="phone" name="phone" required disabled
+                                       value="@Model.CurrentUser?.PhoneNumber">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" required disabled
+                                       value="@Model.CurrentUser?.Email">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="address">Địa chỉ</label>
+                                <input type="text" class="form-control" id="address" name="address" required disabled
+                                       value="@Model.CurrentUser?.Address">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="maintenanceServiceId">Dịch vụ</label>
+                                <select class="form-control" id="maintenanceServiceId" name="maintenanceServiceId"
+                                        required>
+                                    @foreach (var service in Model.MaintenanceServices)
+                                    {
+                                        <option value="@service.ServiceId" data-require-design="@service.RequireDesign">
+                                            @service.ServiceName
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        @* <div class="col-md-6 require-design">
+                        <div class="form-group">
+                        <label for="designName">Tên thiết kế</label>
+                        <input type="text" class="form-control" id="designName" name="designName">
+                        </div>
+                        </div>
+
+                        <div class="col-md-6 require-design">
+                        <div class="form-group">
+                        <label for="designImage">Đường dẫn hình ảnh thiết kế</label>
+                        <input type="text" class="form-control" id="designImage" name="designImage">
+                        </div>
+                        </div> *@
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="customDesignDescription">Mô tả</label>
+                                <textarea class="form-control" id="customDesignDescription"
+                                          name="customDesignDescription" rows="3"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <button type="submit" class="htc__btn">Gửi yêu cầu</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/ckeditor5/ckeditor.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            ClassicEditor
+                .create(document.querySelector('#customDesignDescription'))
+                .then(editor => {
+                    const data = editor.getData();
+                    $('#customDesignDescription').val(data);
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+
+            $('#maintenanceServiceId').change(function () {
+                var requireDesign = $('#maintenanceServiceId option:selected').data('require-design') == "True";
+                if (requireDesign) {
+                    $('.require-design').show();
+                } else {
+                    $('.require-design').hide();
+                }
+            });
+
+            $('#maintenanceServiceId').trigger('change');
+
+            var maintenanceServiceId = new URLSearchParams(window.location.search).get('maintenanceServiceId');
+            if (maintenanceServiceId) {
+                $('#maintenanceServiceId').val(maintenanceServiceId);
+                $('#maintenanceServiceId').trigger('change');
+            }
+
+            $('form').validate({
+                rules: {
+                    customDesignDescription: {
+                        required: true
+                    },
+                    maintenanceServiceId: {
+                        required: true
+                    }
+                },
+                messages: {
+                    customDesignDescription: {
+                        required: "Vui lòng nhập mô tả"
+                    },
+                    maintenanceServiceId: {
+                        required: "Vui lòng chọn loại dịch vụ"
+                    }
+                },
+                submitHandler: function (form) {
+                    event.preventDefault();
+                    Swal.fire({
+                        title: 'Xác nhận',
+                        text: "Bạn có chắc chắn muốn gửi yêu cầu này không?",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Gửi',
+                        cancelButtonText: 'Hủy'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();  
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

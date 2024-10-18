@@ -4,9 +4,9 @@ public partial class Promotion
 {
     public int PromotionId { get; set; }
 
-    public string PromotionName { get; set; } = null!;
+    public string? PromotionName { get; set; } = null!;
 
-    public string PromotionImage { get; set; } = null!;
+    public string? PromotionImage { get; set; } = null!;
 
     public string? Description { get; set; }
 

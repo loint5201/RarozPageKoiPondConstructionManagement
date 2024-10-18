@@ -8,7 +8,7 @@ public partial class ServiceRequest
 
     public int? ServiceId { get; set; }
 
-    public string Status { get; set; } = null!;
+    public string? Status { get; set; } = null!;
 
     public DateTime CreatedAt { get; set; }
 

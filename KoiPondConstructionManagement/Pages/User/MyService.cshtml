@@ -1,0 +1,97 @@
+﻿@page
+@model KoiPondConstructionManagement.Pages.User.MyServiceModel
+@{
+}
+<!-- Start Bradcaump area -->
+<div class="ht__bradcaump__area" data--black__overlay="6" style="background: rgba(0, 0, 0, 0) url('/images/bg/5.jpg') no-repeat scroll center center / cover ;">
+    <div class="ht__bradcaump__wrap">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="bradcaump__inner text-center">
+                        <h2 class="bradcaump-title">
+                            Dịch vụ của tôi</span>
+                            <nav class="bradcaump-inner">
+                                <a class="breadcrumb-item" asp-page="/Index">Trang chủ</a>
+                                <span class="brd-separetor">-</span>
+                                <span class="breadcrumb-item active">Dịch vụ của tôi</span>
+                            </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Bradcaump area -->
+
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="htc__bst__construc">
+                <div class="htc__bst__btn text-center mt--30">
+                    <a class="htc__btn" asp-page="/Service/Request">Đặt dịch vụ</a>
+                </div>
+
+                @if (Model.ConstructionRequests.Count <= 0)
+                {
+                    <div class="htc__bst__service text-center mt--30">
+                        <div class="htc__bst__service__inner">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="htc__bst__service__wrap">
+                                        <div class="htc__bst__service__details">
+                                            <h2><a href="#">Không có dịch vụ nào</a></h2>
+                                            <p>Hiện tại bạn chưa có dịch vụ nào. Hãy đặt mới dịch vụ để quản lý.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="htc__bst__service text-center mt--30">
+                        <div class="htc__bst__service__inner">
+                            <div class="row">
+                                <table id="datatable" class="display" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th>STT</th>
+                                            <th>Tên dịch vụ</th>
+                                            <th>Ngày tạo</th>
+                                            <th>Trạng thái</th>
+                                            <th>Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (int i = 0; i < Model.ConstructionRequests.Count; i++)
+                                        {
+                                            <tr>
+                                                <td>@(i+1)</td>
+                                                <td>@Model.ConstructionRequests[i].MaintenanceService?.ServiceName</td>
+                                                <td>@Model.ConstructionRequests[i].CreatedAt.ToString("dd/MM/yyyy")</td>
+                                                <td>@await Html.PartialAsync("_ConstructionRequestsStatusPartial", Model.ConstructionRequests[i])</td>
+                                                <td>
+                                                    <a href="/" class="btn btn-primary" is-development="true">Xem chi tiết</a>
+                                                    <a href="/" class="btn btn-danger" is-development="true">Hủy</a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $('#datatable').DataTable();
+        });
+    </script>
+}

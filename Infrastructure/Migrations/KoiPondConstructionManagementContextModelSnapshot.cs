@@ -44,14 +44,12 @@ namespace Infrastructure.Migrations
                         .HasColumnType("int")
                         .HasColumnName("RequestID");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
+                    b.Property<int?>("Status")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("int");
 
-                    b.Property<string>("Step")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("Step")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
@@ -77,6 +75,9 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RequestId"));
 
+                    b.Property<decimal?>("CostEstimate")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
@@ -93,10 +94,12 @@ namespace Infrastructure.Migrations
                         .HasColumnType("int")
                         .HasColumnName("DesignID");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
+                    b.Property<int?>("MaintenanceServiceId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Status")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
@@ -109,6 +112,8 @@ namespace Infrastructure.Migrations
                     b.HasIndex("CustomerId");
 
                     b.HasIndex("DesignId");
+
+                    b.HasIndex("MaintenanceServiceId");
 
                     b.ToTable("ConstructionRequests");
                 });
@@ -133,6 +138,12 @@ namespace Infrastructure.Migrations
                     b.Property<int?>("CustomerId")
                         .HasColumnType("int")
                         .HasColumnName("CustomerID");
+
+                    b.Property<int?>("PaymentMethod")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PaymentStatus")
+                        .HasColumnType("int");
 
                     b.Property<int?>("RequestId")
                         .HasColumnType("int")
@@ -203,7 +214,6 @@ namespace Infrastructure.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DesignId"));
 
                     b.Property<string>("CostEstimate")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -211,14 +221,18 @@ namespace Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DesignImage")
-                        .IsRequired()
                         .HasMaxLength(2048)
                         .HasColumnType("nvarchar(2048)");
 
                     b.Property<string>("DesignName")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<int?>("DesignType")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Status")
+                        .HasColumnType("int");
 
                     b.HasKey("DesignId")
                         .HasName("PK__KoiDesig__32B8E17F671C8093");
@@ -238,18 +252,21 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
                     b.Property<string>("Price")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<bool>("RequireDesign")
+                        .HasColumnType("bit");
+
                     b.Property<string>("ServiceImage")
-                        .IsRequired()
                         .HasMaxLength(2048)
                         .HasColumnType("nvarchar(2048)");
 
                     b.Property<string>("ServiceName")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -275,7 +292,6 @@ namespace Infrastructure.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("PolicyName")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -304,12 +320,10 @@ namespace Infrastructure.Migrations
                         .HasColumnType("date");
 
                     b.Property<string>("PromotionImage")
-                        .IsRequired()
                         .HasMaxLength(2048)
                         .HasColumnType("nvarchar(2048)");
 
                     b.Property<string>("PromotionName")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -332,7 +346,6 @@ namespace Infrastructure.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoleId"));
 
                     b.Property<string>("RoleName")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -365,7 +378,6 @@ namespace Infrastructure.Migrations
                         .HasColumnName("ServiceID");
 
                     b.Property<string>("Status")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -397,22 +409,18 @@ namespace Infrastructure.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Avatar")
-                        .IsRequired()
                         .HasMaxLength(2048)
                         .HasColumnType("nvarchar(2048)");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("FullName")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("PasswordHash")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
@@ -430,7 +438,8 @@ namespace Infrastructure.Migrations
                     b.HasIndex("RoleId");
 
                     b.HasIndex(new[] { "Email" }, "UQ__Users__A9D105349EE3CA92")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[Email] IS NOT NULL");
 
                     b.ToTable("Users");
                 });
@@ -464,9 +473,15 @@ namespace Infrastructure.Migrations
                         .HasForeignKey("DesignId")
                         .HasConstraintName("FK__Construct__Desig__403A8C7D");
 
+                    b.HasOne("Domain.Entities.MaintenanceService", "MaintenanceService")
+                        .WithMany()
+                        .HasForeignKey("MaintenanceServiceId");
+
                     b.Navigation("Customer");
 
                     b.Navigation("Design");
+
+                    b.Navigation("MaintenanceService");
                 });
 
             modelBuilder.Entity("Domain.Entities.CustomerOrderHistory", b =>
