@@ -1,0 +1,36 @@
+:root {
+    --primary-color: rgb(32, 158, 27);
+}
+
+.text-center {
+    text-align: center !important;
+}
+
+.text-left {
+    text-align: left !important;
+}
+
+.text-right {
+    text-align: right !important;
+}
+
+@keyframes animate {
+    from {
+        transform: scale(1, 0);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1, 1);
+        opacity: 1;
+    }
+}
+
+input[type="file"] {
+    width: 100%;
+}
+
+input[type="file"]:focus
+input[type="file"]:focus-visible{
+    outline: none;
+}

@@ -91,8 +91,8 @@
   font-family: Raleway;
   font-size: 14px;
   font-weight: 600;
-  height: 130px;
-  line-height: 130px;
+  height: 80px;
+  line-height: 80px;
   position: relative;
   text-transform: uppercase;
 }
@@ -107,8 +107,8 @@
 }
 
 .logo {
-    height: 130px;
-    line-height: 130px;
+    height: 80px;
+    line-height: 80px;
 }
 .main__menu li {
     padding: 0 15px;

@@ -1,8 +1,29 @@
-﻿
+
 
 (function ($) {
     'use strict';
+    async function callAjax(url, method, data, headers, options) {
+        return await $.ajax({
+            url: url,
+            method: method,
+            data: data,
+            headers: {
+                ...headers
+            },
+            ...options
+        });
+    }
+    
     $(document).ready(function () {
+        $.ajaxSetup({
+            headers: {
+                'RequestVerificationToken': getToken()
+            }
+        });
+        
+        $.callAjax = callAjax;
+        $.getToken = getToken;
+
         $.extend(true, $.fn.dataTable.defaults, {
             "language": {
                 "sProcessing": "Đang xử lý...",

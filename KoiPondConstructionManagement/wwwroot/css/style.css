@@ -1143,7 +1143,7 @@ About 2
 .ht__bradcaump__wrap {
     align-items: center;
     display: flex;
-    height: 400px;
+    height: 200px;
     position: relative;
     z-index: 2;
 }
@@ -1154,7 +1154,7 @@ About 2
     text-transform: uppercase;
 }
 .bradcaump-inner span {
-  color: #fff;
+  color: #fff !important;
   font-size: 18px;
   font-weight: 600;
   text-transform: uppercase;

@@ -266,15 +266,15 @@
 }
 
 .main__menu > li > a {
-  height: 110px;
-  line-height: 110px;
+  height: 80px;
+  line-height: 80px;
 }
 .logo {
-  height: 110px;
-  line-height: 110px;
+  height: 80px;
+  line-height: 80px;
 }
 .htc__header__search {
-  height: 110px;
+  height: 80px;
 }
 
 }

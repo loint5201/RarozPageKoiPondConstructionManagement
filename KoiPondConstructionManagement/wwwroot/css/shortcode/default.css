@@ -198,12 +198,12 @@ a {
 a:hover,
 a:focus,
 a:active {
-    color: #fcc236;
+    color: #fcc236 !important;
 }
 p a:hover,
 p a:focus,
 p a:active {
-    color: #fcc236;
+    color: #fcc236 !important;
 }
 h1 a,
 h2 a,
