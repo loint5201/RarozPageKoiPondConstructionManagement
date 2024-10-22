@@ -16,7 +16,5 @@ public partial class MaintenanceService
 
     public bool RequireDesign { get; set; } = false;
 
-    public virtual ICollection<ServiceRequest> ServiceRequests { get; set; } = new List<ServiceRequest>();
-
     public virtual ICollection<ConstructionRequest> ConstructionRequests { get; set; } = new List<ConstructionRequest>();
 }

@@ -8,8 +8,6 @@ public partial class Feedback
 
     public int? RequestId { get; set; }
 
-    public int? ServiceRequestId { get; set; }
-
     public int? Rating { get; set; }
 
     public string? Comment { get; set; }
@@ -19,6 +17,4 @@ public partial class Feedback
     public virtual User? Customer { get; set; }
 
     public virtual ConstructionRequest? Request { get; set; }
-
-    public virtual ServiceRequest? ServiceRequest { get; set; }
 }

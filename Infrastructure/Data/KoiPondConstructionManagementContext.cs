@@ -32,8 +32,6 @@ public partial class KoiPondConstructionManagementContext : DbContext
 
     public virtual DbSet<Role> Roles { get; set; }
 
-    public virtual DbSet<ServiceRequest> ServiceRequests { get; set; }
-
     public virtual DbSet<User> Users { get; set; }
 
     //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -129,7 +127,6 @@ public partial class KoiPondConstructionManagementContext : DbContext
                 .HasColumnType("datetime");
             entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
             entity.Property(e => e.RequestId).HasColumnName("RequestID");
-            entity.Property(e => e.ServiceRequestId).HasColumnName("ServiceRequestID");
 
             entity.HasOne(d => d.Customer).WithMany(p => p.Feedbacks)
                 .HasForeignKey(d => d.CustomerId)
@@ -138,10 +135,6 @@ public partial class KoiPondConstructionManagementContext : DbContext
             entity.HasOne(d => d.Request).WithMany(p => p.Feedbacks)
                 .HasForeignKey(d => d.RequestId)
                 .HasConstraintName("FK__Feedback__Reques__5535A963");
-
-            entity.HasOne(d => d.ServiceRequest).WithMany(p => p.Feedbacks)
-                .HasForeignKey(d => d.ServiceRequestId)
-                .HasConstraintName("FK__Feedback__Servic__5629CD9C");
         });
 
         modelBuilder.Entity<KoiDesign>(entity =>
@@ -192,30 +185,6 @@ public partial class KoiPondConstructionManagementContext : DbContext
 
             entity.Property(e => e.RoleId).HasColumnName("RoleID");
             entity.Property(e => e.RoleName).HasMaxLength(50);
-        });
-
-        modelBuilder.Entity<ServiceRequest>(entity =>
-        {
-            entity.HasKey(e => e.ServiceRequestId).HasName("PK__ServiceR__790F6CAB08527AA3");
-
-            entity.Property(e => e.ServiceRequestId).HasColumnName("ServiceRequestID");
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime");
-            entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
-            entity.Property(e => e.ServiceId).HasColumnName("ServiceID");
-            entity.Property(e => e.Status);
-            entity.Property(e => e.UpdatedAt)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime");
-
-            entity.HasOne(d => d.Customer).WithMany(p => p.ServiceRequests)
-                .HasForeignKey(d => d.CustomerId)
-                .HasConstraintName("FK__ServiceRe__Custo__4CA06362");
-
-            entity.HasOne(d => d.Service).WithMany(p => p.ServiceRequests)
-                .HasForeignKey(d => d.ServiceId)
-                .HasConstraintName("FK__ServiceRe__Servi__4D94879B");
         });
 
         modelBuilder.Entity<User>(entity =>
