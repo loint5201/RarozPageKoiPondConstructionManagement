@@ -1,0 +1,154 @@
+﻿@page
+@using Domain.Enums
+@model KoiPondConstructionManagement.Pages.User.Service.IndexModel
+@{
+}
+<!-- Start Bradcaump area -->
+<div class="ht__bradcaump__area" data--black__overlay="6" style="background: rgba(0, 0, 0, 0) url('/images/bg/5.jpg') no-repeat scroll center center / cover ;">
+    <div class="ht__bradcaump__wrap">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="bradcaump__inner text-center">
+                        <h2 class="bradcaump-title">
+                            Dịch vụ của tôi</span>
+                            <nav class="bradcaump-inner">
+                                <a class="breadcrumb-item" asp-page="/Index">Trang chủ</a>
+                                <span class="brd-separetor">-</span>
+                                <span class="breadcrumb-item active">Dịch vụ của tôi</span>
+                            </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Bradcaump area -->
+
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="htc__bst__construc">
+                <div class="htc__bst__btn text-center mt--30">
+                    <a class="htc__btn" asp-page="/Service/Request">Đặt dịch vụ</a>
+                </div>
+
+                @if (Model.ConstructionRequests.Count <= 0)
+                {
+                    <div class="htc__bst__service text-center mt--30">
+                        <div class="htc__bst__service__inner">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="htc__bst__service__wrap">
+                                        <div class="htc__bst__service__details">
+                                            <h2><a href="#">Không có dịch vụ nào</a></h2>
+                                            <p>Hiện tại bạn chưa có dịch vụ nào. Hãy đặt mới dịch vụ để quản lý.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="htc__bst__service text-center mt--30">
+                        <div class="htc__bst__service__inner">
+                            <div class="row">
+                                <table id="datatable" class="display" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-right">STT</th>
+                                            <th class="text-left">Tên dịch vụ</th>
+                                            <th class="text-center">Ngày tạo</th>
+                                            <th class="text-right">Mức giá dự kiến</th>
+                                            <th class="text-center">Trạng thái</th>
+                                            <th class="text-center">Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (int i = 0; i < Model.ConstructionRequests.Count; i++)
+                                        {
+                                            <tr>
+                                                <td class="text-right">@(i + 1)</td>
+                                                <td class="text-left">@Model.ConstructionRequests[i].MaintenanceService?.ServiceName</td>
+                                                <td class="text-center">@Model.ConstructionRequests[i].CreatedAt.ToString("dd/MM/yyyy")</td>
+                                                <td class="text-right">@Model.ConstructionRequests[i].CostEstimate?.ToString("C", new System.Globalization.CultureInfo("vi-VN"))</td>
+                                                <td class="text-center">@await Html.PartialAsync("_ConstructionRequestsStatusPartial", Model.ConstructionRequests[i])</td>
+                                                <td class="text-center">
+                                                    <a asp-page="/User/Service/Detail" asp-route-id="@Model.ConstructionRequests[i].RequestId" class="btn btn-primary">Xem chi tiết</a>
+                                                    @if (Model.ConstructionRequests[i].Status == (int)ConstructionRequestsStatus.Pending)
+                                                    {
+                                                        <a href="javascript:void(0)"
+                                                           class="btn btn-danger"
+                                                           btn-action="cancel"
+                                                           btn-url="@Url.Page("/User/Service/Index")"
+                                                           btn-path="CancelService"
+                                                           btn-id="@Model.ConstructionRequests[i].RequestId">
+                                                            Hủy
+                                                        </a>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#datatable').DataTable();
+
+            // tạo base btn click
+            $('a[btn-action]').click(async function () {
+                var action = $(this).attr('btn-action');
+                var url = $(this).attr('btn-url');
+                var path = $(this).attr('btn-path');
+                var id = $(this).attr('btn-id');
+
+                if (!action || !url || !path) return;
+                action = action.toLowerCase();
+
+                if (action === 'cancel') {
+                    let cf = await Swal.fire({
+                        title: 'Bạn có chắc chắn muốn hủy yêu cầu này?',
+                        text: "Hành động này không thể hoàn tác!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Đồng ý',
+                        cancelButtonText: 'Hủy'
+                    });
+
+                    if (cf.isConfirmed) {
+                        let { success, message } = await $.callAjax(`${url}?handler=${path}`, 'POST', { requestId: id });
+                        if (!success) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: message
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Bạn đã hủy yêu cầu thành công!',
+                                text: message
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        }
+                    }
+                }
+
+            });
+        });
+    </script>
+}

@@ -2,11 +2,6 @@
 @model KoiPondConstructionManagement.Pages.Service.RequestModel
 @{
 }
-<style>
-    .ht__bradcaump__wrap {
-        height: 180px;
-    }
-</style>
 <!-- Start Bradcaump area -->
 <div class="ht__bradcaump__area" data--black__overlay="6"
      style="background: rgba(0, 0, 0, 0) url('/images/bg/5.jpg') no-repeat scroll center center / cover;">
@@ -86,11 +81,10 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="maintenanceServiceId">Dịch vụ</label>
-                                <select class="form-control" id="maintenanceServiceId" name="maintenanceServiceId"
-                                        required>
+                                <select class="form-control" id="maintenanceServiceId" name="maintenanceServiceId" required>
                                     @foreach (var service in Model.MaintenanceServices)
                                     {
-                                        <option value="@service.ServiceId" data-require-design="@service.RequireDesign">
+                                        <option value="@service.ServiceId" data-expected-price="@service.Price">
                                             @service.ServiceName
                                         </option>
                                     }
@@ -98,19 +92,12 @@
                             </div>
                         </div>
 
-                        @* <div class="col-md-6 require-design">
-                        <div class="form-group">
-                        <label for="designName">Tên thiết kế</label>
-                        <input type="text" class="form-control" id="designName" name="designName">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="costEstimate">Mức giá dự kiến</label>
+                                <input type="text" class="form-control" id="costEstimate" name="costEstimate" disabled>
+                            </div>
                         </div>
-                        </div>
-
-                        <div class="col-md-6 require-design">
-                        <div class="form-group">
-                        <label for="designImage">Đường dẫn hình ảnh thiết kế</label>
-                        <input type="text" class="form-control" id="designImage" name="designImage">
-                        </div>
-                        </div> *@
 
                         <div class="col-md-12">
                             <div class="form-group">
@@ -145,11 +132,12 @@
                 });
 
             $('#maintenanceServiceId').change(function () {
-                var requireDesign = $('#maintenanceServiceId option:selected').data('require-design') == "True";
-                if (requireDesign) {
-                    $('.require-design').show();
+                var costEstimate = $('#maintenanceServiceId option:selected').data('expected-price');
+                if (!costEstimate) {
+                    $('#costEstimate').val('Liên hệ');
                 } else {
-                    $('.require-design').hide();
+                    costEstimate = parseFloat(costEstimate);
+                    $('#costEstimate').val(costEstimate.toLocaleString('vi-VN', {style: 'currency', currency: 'VND'}));
                 }
             });
 

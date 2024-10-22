@@ -1,0 +1,154 @@
+﻿@page
+@using Domain.Enums
+@model KoiPondConstructionManagement.Pages.Manager.Admin.Service.RequestModel
+@{
+}
+<link href="~/admin/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+<!-- Page Heading -->
+<h1 class="h3 mb-2 text-gray-800">Dịch vụ yêu cầu</h1>
+<p class="mb-4">
+    Các dịch vụ khách hàng yêu cầu
+</p>
+
+<!-- DataTales Example -->
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th class="text-right">Số yêu cầu</th>
+                        <th class="text-center">Tên dịch vụ</th>
+                        <th class="text-right">Giá thi công dự kiến</th>
+                        <th class="text-left">Khách hàng</th>
+                        <th class="text-left">Số điện thoại</th>
+                        <th class="text-left">Địa chỉ</th>
+                        <th class="text-center">Trạng thái</th>
+                        <th class="text-center">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var request in Model.ConstructionRequests)
+                    {
+                        <tr>
+                            <td class="text-right">@request.RequestId</td>
+                            <td class="text-center">@request.MaintenanceService?.ServiceName</td>
+                            <th class="text-right">@request.CostEstimate?.ToString("C", new System.Globalization.CultureInfo("vi-VN"))</th>
+                            <td class="text-left">@request.Customer?.FullName</td>
+                            <td class="text-left">@request.Customer?.PhoneNumber</td>
+                            <td class="text-left">@request.Customer?.Address</td>
+                            <td class="text-center">@await Html.PartialAsync("_ConstructionRequestsStatusPartial", @request)</td>
+                            <td class="text-center">
+                                @if (request.Status == (int)ConstructionRequestsStatus.Pending)
+                                {
+                                    <a href="javascript:void(0)"
+                                       class="btn btn-primary"
+                                       btn-action="approved"
+                                       btn-url="@Url.Page("/Manager/Admin/Service/Request")"
+                                       btn-path="ChangeStatus"
+                                       btn-status="@((int)ConstructionRequestsStatus.Approved)"
+                                       btn-id="@request.RequestId">
+                                        Duyệt
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a asp-page="/Manager/Admin/Service/RequestDetail" asp-route-id="@request.RequestId" class="btn btn-primary">Chi tiết</a>
+                                }
+
+                                @if (request.Status != (int)ConstructionRequestsStatus.Completed && request.Status != (int)ConstructionRequestsStatus.Rejected && request.Status != (int)ConstructionRequestsStatus.Cancelled)
+                                {
+                                    <a href="javascript:void(0)"
+                                       class="btn btn-danger"
+                                       btn-action="cancel"
+                                       btn-url="@Url.Page("/Manager/Admin/Service/Request")"
+                                       btn-path="ChangeStatus"
+                                       btn-status="@((int)ConstructionRequestsStatus.Rejected)"
+                                       btn-id="@request.RequestId">
+                                        Từ chối
+                                    </a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Page level plugins -->
+    <script src="~/admin/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/admin/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="~/admin/js/demo/datatables-demo.js"></script>
+    <script>
+        $(document).ready(function () {
+             // tạo base btn click
+            $('a[btn-action]').click(async function () {
+                var action = $(this).attr('btn-action');
+                var url = $(this).attr('btn-url');
+                var path = $(this).attr('btn-path');
+                var id = $(this).attr('btn-id');
+                var status = $(this).attr('btn-status');
+
+                if (!action || !url || !path) return;
+                action = action.toLowerCase();
+
+                let message = "",
+                    rejectReason = "";
+                if (action == "cancel") {
+                    message = "Từ chối yêu cầu";
+                    let { value: reason } = await Swal.fire({
+                        title: 'Nhập lý do từ chối',
+                        input: 'text',
+                        inputPlaceholder: 'Lý do từ chối',
+                        showCancelButton: true,
+                        inputValidator: (value) => {
+                            if (!value) {
+                                return 'Vui lòng nhập lý do từ chối!';
+                            }
+                        }
+                    });
+                    if (!reason) return;
+                    rejectReason = reason;
+                } else if (action == "approved") {
+                    message = "Duyệt yêu cầu";
+                }
+
+                if (action === 'cancel' || action === 'approved') {
+                    let cf = await Swal.fire({
+                        title: message,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Đồng ý',
+                        cancelButtonText: 'Hủy'
+                    });
+
+                    if (cf.isConfirmed) {
+                        let { success, message } = await $.callAjax(`${url}?handler=${path}&requestId=${id}`, 'POST', { status: status, rejectReason: rejectReason });
+                        if (!success) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: message
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Thành công',
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}

@@ -1,10 +1,23 @@
-﻿<!DOCTYPE html>
+﻿@using Domain.Enums
+<!DOCTYPE html>
 <html lang="en">
+@{
+    string title = ViewData["Title"] as string;
+    if (string.IsNullOrEmpty(title))
+    {
+        title = "Giải Pháp Toàn Diện Cho Hồ Cá Koi";
+    }
+    else
+    {
+        title = title + " - Giải Pháp Toàn Diện Cho Hồ Cá Koi";
+    }
+}
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Giải Pháp Toàn Diện Cho Hồ Cá Koi</title>
-    @* <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" /> *@
+    <title>@title</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/bootstrap.min.css">
     <!-- Sweet alert2 css -->
     <link rel="stylesheet" href="~/lib/sweetalert2/sweetalert2.min.css" />
@@ -23,8 +36,8 @@
     <link rel="stylesheet" href="~/css/responsive.css">
     <!-- User style -->
     <link rel="stylesheet" href="~/css/custom.css">
-
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/@(nameof(KoiPondConstructionManagement)).styles.css" asp-append-version="true" />
 </head>
 <body>
     <div class="wrapper">
@@ -51,7 +64,35 @@
                                     }
                                     else
                                     {
-                                        <li><a href="#">Xin chào, @User.Identity.Name!</a></li>
+                                        <li class="dropdown">
+                                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Xin chào, @User.Identity.Name!
+                                            </a>
+
+                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                                <li><a class="dropdown-item" asp-page="/User/Profile/Index">Hồ sơ</a></li>
+                                                @if (!User.IsCustomer())
+                                                {
+                                                    switch (User.GetRole())
+                                                    {
+                                                        case AppRoles.Manager:
+                                                            <li><a class="dropdown-item" asp-page="/Manager/Admin/Index">Trang quản lý</a></li>
+                                                            break;
+                                                        case AppRoles.Construction_Staff:
+                                                            <li><a class="dropdown-item" asp-page="/Manager/Construction/Index">Quản lý thi công</a></li>
+                                                            break;
+                                                        case AppRoles.Design_Staff:
+                                                            <li><a class="dropdown-item" asp-page="/Manager/Design/Index">Quản lý thiết kế</a></li>
+                                                            break;
+                                                        case AppRoles.Consulting_Staff:
+                                                            <li><a class="dropdown-item" asp-page="/Manager/Consulting/Index">Quản lý tư vấn</a></li>
+                                                            break;
+                                                        default:
+                                                            break;
+                                                    };
+                                                }
+                                            </ul>
+                                        </li>
                                         <li class="separator">/</li>
                                         <li><a href="/Logout">Đăng xuất</a></li>
                                     }
@@ -108,22 +149,22 @@
                                     <li><a asp-page="/LoginRegister">Log in & Register</a></li>
                                     </ul>
                                     </li> *@
-                                    <li class="drop">
-                                        <a asp-page="/Blog/Index">BLOG</a>
-                                        @* <ul class="dropdown">
-                                        <li><a asp-page="/Blog">Blog</a></li>
-                                        <li><a asp-page="/BlogOneColumn">Blog One Column</a></li>
-                                        <li><a asp-page="/BlogTwoColumn">Blog Two Column</a></li>
-                                        </ul> *@
-                                    </li>
+                                    @* <li class="drop"> *@
+                                    @* <a asp-page="/Blog/Index">BLOG</a> *@
+                                    @* <ul class="dropdown">
+                                    <li><a asp-page="/Blog">Blog</a></li>
+                                    <li><a asp-page="/BlogOneColumn">Blog One Column</a></li>
+                                    <li><a asp-page="/BlogTwoColumn">Blog Two Column</a></li>
+                                    </ul> *@
+                                    @* </li> *@
                                     <li><a asp-page="/Contact">Liên hệ</a></li>
-                                    @if (User.Identity.IsAuthenticated)
+                                    @if (User.IsCustomer())
                                     {
                                         <li class="drop">
                                             <a href="#">Quản Lý</a>
                                             <ul class="dropdown">
                                                 <li><a asp-page="/Service/Request">Đặt dịch vụ</a></li>
-                                                <li><a asp-page="/User/MyService">Quản lý dịch vụ</a></li>
+                                                <li><a asp-page="/User/Service/Index">Quản lý dịch vụ</a></li>
                                                 <li><a asp-page="/ProjectsThree" is-development="true">Lịch Sử Dịch Vụ</a></li>
                                             </ul>
                                         </li>
@@ -196,6 +237,13 @@
         <!-- End Footer Area -->
     </div>
 
+    <script type="text/javascript">
+        function getToken() {
+            var token = '@Html.AntiForgeryToken()';
+            token = $(token).val();
+            return token;
+        }
+    </script>
 
     <!-- jquery latest version -->
     <script src="~/js/vendor/jquery-1.12.0.min.js"></script>
@@ -212,11 +260,12 @@
     <script src="~/js/waypoints.min.js"></script>
     <script src="~/lib/sweetalert2/sweetalert2.min.js"></script>
     <script src="~/lib/datatables/datatables.min.js"></script>
-    <!-- Main js file that contents all jQuery plugins activation. -->
-    <script src="~/js/main.js"></script>
+
 
     @* <script src="~/lib/jquery/dist/jquery.min.js"></script> *@
-    @* <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script> *@
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Main js file that contents all jQuery plugins activation. -->
+    <script src="~/js/main.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
 

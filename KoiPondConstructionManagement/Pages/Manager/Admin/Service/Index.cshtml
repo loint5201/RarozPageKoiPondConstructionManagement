@@ -1,0 +1,111 @@
+﻿@page
+@model KoiPondConstructionManagement.Pages.Manager.Admin.Service.IndexModel
+@{
+}
+<link href="~/admin/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+<!-- Page Heading -->
+<h1 class="h3 mb-2 text-gray-800">Dịch vụ</h1>
+<p class="mb-4">
+   Danh mục các dịch vụ
+</p>
+
+<!-- DataTales Example -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">
+            <a asp-page="/Manager/Admin/Service/Detail" class="btn btn-success">Thêm mới</a>
+        </h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th class="text-right">Vị trí</th>
+                        <th class="text-center">Hình ảnh</th>
+                        <th class="text-left">Tên dịch vụ</th>
+                        <th class="text-right">Giá dịch vụ</th>
+                        <th class="text-center"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var service in Model.MaintenanceServices)
+                    {
+                        <tr>
+                            <td class="text-right">@service.Order</td>
+                            <td class="text-center"><img src="~/uploads/@service.ServiceImage" alt="@service.ServiceName" width="100px" height="auto"/></td>
+                            <td class="text-left">@service.ServiceName</td>
+                            <td class="text-right">@service.Price?.ToString("C", new System.Globalization.CultureInfo("vi-VN"))</td>
+                            <td class="text-center">
+                                <a asp-page="/Manager/Admin/Service/Detail" asp-route-id="@service.ServiceId" class="btn btn-primary">Sửa</a>
+                                <a href="javascript:void(0)"
+                                   class="btn btn-danger"
+                                   btn-action="delete"
+                                   btn-url="@Url.Page("/Manager/Admin/Service/Index")"
+                                   btn-path="DeleteService"
+                                   btn-id="@service.ServiceId">
+                                    Xóa
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Page level plugins -->
+    <script src="~/admin/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/admin/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="~/admin/js/demo/datatables-demo.js"></script>
+    <script>
+        $(document).ready(function () {
+             // tạo base btn click
+            $('a[btn-action]').click(async function () {
+                var action = $(this).attr('btn-action');
+                var url = $(this).attr('btn-url');
+                var path = $(this).attr('btn-path');
+                var id = $(this).attr('btn-id');
+
+                if (!action || !url || !path) return;
+                action = action.toLowerCase();
+
+                if (action === 'delete') {
+                    let cf = await Swal.fire({
+                        title: 'Bạn có chắc chắn muốn xóa dịch vụ này?',
+                        text: "Hành động này không thể hoàn tác!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Đồng ý',
+                        cancelButtonText: 'Hủy'
+                    });
+
+                    if (cf.isConfirmed) {
+                        let { success, message } = await $.callAjax(`${url}?handler=${path}`, 'DELETE', { serviceId: id });
+                        if (!success) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: message
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Xóa dịch vụ thành công!',
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}

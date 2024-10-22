@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using Domain.Enums;
+﻿using Domain.Enums;
 using Domain.Extension;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace KoiPondConstructionManagement.Middleware
 {

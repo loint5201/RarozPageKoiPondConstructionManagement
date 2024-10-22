@@ -43,6 +43,12 @@ namespace KoiPondConstructionManagement.Pages.Service
             if (Request != null)
             {
                 ConstructionRequest request = _mapper.Map<ConstructionRequest>(Request);
+
+                var service = await _context.MaintenanceServices
+                    .FirstOrDefaultAsync(x => x.ServiceId == Request.MaintenanceServiceId);
+                if (service == null) return NotFound();
+
+                request.CostEstimate = service.Price;
                 request.CustomerId = User.GetUserId();
                 request.CreatedAt = DateTime.Now;
                 request.UpdatedAt = DateTime.Now;

@@ -1,0 +1,355 @@
+﻿@page
+@using Domain.Enums
+@model KoiPondConstructionManagement.Pages.Manager.Admin.Service.RequestDetailModel
+@{
+}
+
+<input name="requestId" hidden value="@Model.ConstructionRequest?.RequestId" />
+<!-- DataTales Example -->
+<div class="card shadow mb-4">
+    <div class="card-body" style="z-index: 0">
+        <!-- Form Begins -->
+        <div class="form">
+            <!-- Progress Bar  -->
+            <div class="progressbar">
+                <div class="progress" id="progress"></div>
+                <div class="progress-step progress-step-active" data-title="Chờ xử lý"></div>
+                <div class="progress-step" data-title="Đã duyệt"></div>
+                <div class="progress-step" data-title="Đang thi công"></div>
+                <div class="progress-step" data-title="Đã hoàn thành"></div>
+            </div>
+
+            <!-- Form item - Pending -->
+            <div class="form-step form-step-active">
+                <div name="detail-service">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="fullName">Họ và tên</label>
+                                <input type="text" class="form-control" id="fullName" name="fullName"
+                                       value="@Model.ConstructionRequest?.Customer?.FullName" readonly>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="text" class="form-control" id="email" name="email"
+                                       value="@Model.ConstructionRequest?.Customer?.Email" readonly>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="phoneNumber">Số điện thoại</label>
+                                <input type="text" class="form-control" id="phoneNumber" name="phoneNumber"
+                                       value="@Model.ConstructionRequest?.Customer?.PhoneNumber" readonly>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="address">Địa chỉ</label>
+                                <input type="text" class="form-control" id="address" name="address"
+                                       value="@Model.ConstructionRequest?.Customer?.Address" readonly>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="serviceName">Dịch vụ</label>
+                                <input type="text" class="form-control" id="serviceName" name="serviceName"
+                                       value="@Model.ConstructionRequest?.MaintenanceService?.ServiceName" readonly>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="costEstimate">Mức giá</label>
+                                <input type="text" class="form-control" id="costEstimate" name="costEstimate"
+                                       value="@Model.ConstructionRequest?.CostEstimate?.ToString("C", new System.Globalization.CultureInfo("vi-VN"))"
+                                       readonly>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="customDesignDescription">Mô tả</label>
+                                <div>
+                                    @Html.Raw(@Model.ConstructionRequest?.CustomDesignDescription)
+                                </div>
+                            </div>
+                        </div>
+                        @* <a href="#" class="btn btn-next width-50 ml-auto">Next</a> *@
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form item - Approved -->
+            <div class="form-step">
+                <!-- Table for Process Design -->
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <h4>Thiết kế quy trình <span class="text-danger process-initiation">(Bạn chưa khởi tạo quy trình)</span></h4>
+                        <table class="table table-bordered" id="processTable">
+                            <thead>
+                                <tr>
+                                    <th width="100px">Bước</th>
+                                    <th>Thông tin</th>
+                                    <th width="250px">Giao việc cho</th>
+                                    <th>Trạng thái</th>
+                                    <th>Ghi chú</th>
+                                    <th width="120px" class="text-center">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Rows will be added dynamically here -->
+                            </tbody>
+                        </table>
+                        <div class="d-flex gap-10">
+                            <button class="btn btn-primary" id="addRowBtn">Thêm bước mới</button>
+                            <button class="btn btn-success" id="submitBtn">Lưu</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form item - InProgress -->
+            <div class="form-step">
+                @* <div class="btns-group">
+                <a href="#" class="btn btn-prev">Back</a>
+                <a href="#" class="btn btn-next">Next</a>
+                </div> *@
+            </div>
+
+            <!-- Form item - Completed -->
+            <div class="form-step">
+                @* <div class="btns-group">
+                <a href="#" class="btn btn-prev">Back</a>
+                <input type="submit" value="Register" class="btn" />
+                </div> *@
+            </div>
+        </div>
+        <!-- Form Ends -->
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const prevBtns = document.querySelectorAll(".btn-prev");
+        const nextBtns = document.querySelectorAll(".btn-next");
+        const progress = document.querySelector(".progress");
+        const formSteps = document.querySelectorAll(".form-step");
+        const progressSteps = document.querySelectorAll(".progress-step");
+
+        let formStepsNum = 0;
+
+        /* Event Listener for Next Button. */
+        nextBtns.forEach((btn) => {
+            btn.addEventListener("click", () => {
+                formStepsNum++;
+                updateFormSteps();
+                updateProgressbar();
+            });
+        });
+
+        /* Event Listener for Back Button. */
+        prevBtns.forEach((btn) => {
+            btn.addEventListener("click", () => {
+                formStepsNum--;
+                updateFormSteps();
+                updateProgressbar();
+            });
+        });
+
+        /* Event click progressSteps */
+        progressSteps.forEach((progressStep, index) => {
+            progressStep.addEventListener("click", () => {
+                formStepsNum = index;
+                updateFormSteps();
+                updateProgressbar();
+            });
+        });
+
+        /* Updates Form Items */
+        function updateFormSteps() {
+            formSteps.forEach((formStep) => {
+                formStep.classList.contains("form-step-active") &&
+                    formStep.classList.remove("form-step-active")
+            })
+            formSteps[formStepsNum].classList.add("form-step-active");
+        }
+
+        /* Updates Progress Bar */
+        function updateProgressbar() {
+            progressSteps.forEach((progressStep, index) => {
+                if (index < formStepsNum + 1) {
+                    progressStep.classList.add('progress-step-active')
+
+
+                } else {
+                    progressStep.classList.remove('progress-step-active')
+                }
+            })
+            progress.style.width = ((formStepsNum) / (progressSteps.length - 1)) * 100 + "%";
+
+        }
+    </script>
+    <script src="~/js/ckeditor5/ckeditor.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            let lastStatus = @(Model.ConstructionRequest?.Status - 1);
+            if (lastStatus > 0) {
+                formStepsNum = lastStatus;
+                updateFormSteps();
+                updateProgressbar();
+            }
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            const tableBody = $('#processTable tbody');
+            const addRowBtn = $('#addRowBtn');
+            const submitBtn = $('#submitBtn');
+            let stepCounter = 1; // Biến để theo dõi số bước hiện tại
+            let isDesginService = @(Model.ConstructionRequest?.MaintenanceService?.RequireDesign == true ? "true" : "false");
+            let constructionProcesses = @Html.Raw(Model.ConstructionProcesses);
+            $('.process-initiation').hide();
+            if (!constructionProcesses || constructionProcesses.length == 0) {
+                $('.process-initiation').show();
+            }
+
+            // Danh sách lưu trữ các bước công việc
+            let stepsList = [];
+
+            // Danh sách nhân viên mẫu (có thể thay thế bằng dữ liệu động)
+            const employeeList = @Html.Raw(Model.UserSystem);
+
+            // Hàm để tạo dropdown cho danh sách nhân viên
+            function generateEmployeeSelect(selectedValue = '') {
+                let select = '<select required class="form-control" name="assignedStaffId">';
+                select += '<option value="">Chọn nhân viên</option>';
+                employeeList.forEach(emp => {
+                    select += `<option value="${emp.userId}" ${selectedValue == emp.userId ? 'selected' : ''}>${emp.fullName}</option>`;
+                });
+                select += '</select>';
+                return select;
+            }
+
+            // Hàm để tạo dropdown status cho bước công việc
+            function generateStatusSelect(selectedValue = '') {
+                let select = '<select required class="form-control" name="status">';
+                select += '<option value="0" ' + (selectedValue == 0 ? 'selected' : '') + '>Chờ xử lý</option>';
+                select += '<option value="1" ' + (selectedValue == 1 ? 'selected' : '') + '>Đang thi công</option>';
+                select += '<option value="2" ' + (selectedValue == 2 ? 'selected' : '') + '>Đã hoàn thành</option>';
+                select += '</select>';
+                return select;
+            }
+
+            // Function to render rows from stepsList
+            function renderTable() {
+                tableBody.empty(); // Clear the current table
+                stepsList.forEach((step, index) => {
+                    const newRow = `
+                        <tr data-index="${index}">
+                            <td><input required type="number" min="1" class="form-control" name="step" value="${step.step ?? 1}"></td>
+                            <td><input required type="text" class="form-control" name="stepInfo" value="${step.stepInfo ?? ''}" data-field="stepInfo"></td>
+                            <td>${generateEmployeeSelect(step.assignedStaffId)}</td> <!-- Dropdown cho nhân viên -->
+                                    <td>${generateStatusSelect(step.status ?? 0)}</td> <!-- Dropdown cho trạng thái -->
+                                    <td><input type="text" class="form-control" name="note" value="${step.note ?? ''}" data-field="note"></td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-sm btn-danger deleteRowBtn">Xóa</button>
+                            </td>
+                        </tr>
+                    `;
+                    tableBody.append(newRow);
+                });
+            }
+
+            // Function to add a new step to stepsList
+            function addStep(stepInfo = '', assignedStaffId = '', status = 0, note = '') {
+                const step = stepsList.length + 1; // Số bước tự động tăng
+                stepsList.push({ step, stepInfo, assignedStaffId, status, note });
+                renderTable(); // Render lại bảng sau khi thêm
+            }
+
+            // Add new row when button is clicked
+            addRowBtn.click(function () {
+                addStep(); // Thêm dòng mới với các giá trị trống
+            });
+
+            // Delegate event listener for Delete button
+            tableBody.on('click', '.deleteRowBtn', function () {
+                const index = $(this).closest('tr').data('index');
+                stepsList.splice(index, 1); // Xóa phần tử khỏi danh sách
+                renderTable(); // Render lại bảng
+            });
+
+            // Lắng nghe sự kiện thay đổi trên các input và select
+            tableBody.on('change', 'input, select', function () {
+                const row = $(this).closest('tr');
+                const index = row.data('index');
+                const field = $(this).attr('name'); // Lấy tên trường
+
+                stepsList[index][field] = $(this).val(); // Cập nhật giá trị vào danh sách
+            });
+
+            if (constructionProcesses && constructionProcesses.length) {
+                stepsList = constructionProcesses;
+                renderTable();
+            } else {
+                // Quy trình đặt thi công hồ cá Koi (khách hàng có thể theo dõi)
+                if (isDesginService) {
+                    addStep('Tư vấn');
+                    addStep('Thiết kế ý tưởng');
+                    addStep('Lập hồ sơ thiết kế');
+                    addStep('Thi công');
+                    addStep('Nghiệm thu và bàn giao');
+                }
+
+                // Quy trình đặt dịch vụ vệ sinh, chăm sóc, bảo dưỡng hồ cá Koi (khách hàng có thể theo dõi)
+                if (!isDesginService) {
+                    addStep('Thi công');
+                    addStep('Nghiệm thu và bàn giao');
+                }
+            }
+
+
+            // Submit button action
+            submitBtn.click(async function () {
+                const requestId = $('input[name="requestId"]').val();
+                const requiredFields = document.querySelectorAll('input[required], select[required]');
+                for (let i = 0; i < requiredFields.length; i++) {
+                    if (!requiredFields[i].value) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi',
+                            text: 'Vui lòng điền đầy đủ thông tin!',
+                        });
+                        return;
+                    }
+                }
+                
+                let { success, message, data } = await $.callAjax(`/Manager/Admin/Service/RequestDetail?handler=UpdateProcess&requestId=${requestId}`, 'POST', {
+                    process: stepsList
+                });
+
+                if (!success) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: message
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công',
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                }
+            });
+        });
+    </script>
+
+}

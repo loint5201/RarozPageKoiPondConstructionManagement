@@ -1,0 +1,271 @@
+﻿@page
+@using Domain.Enums
+@model KoiPondConstructionManagement.Pages.User.Service.DetailModel
+@{
+}
+
+<!-- Start Bradcaump area -->
+<div class="ht__bradcaump__area" data--black__overlay="6" style="background: rgba(0, 0, 0, 0) url('/images/bg/5.jpg') no-repeat scroll center center / cover ;">
+    <div class="ht__bradcaump__wrap">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="bradcaump__inner text-center">
+                        <h2 class="bradcaump-title">
+                            @if (Model.ConstructionRequest != null)
+                            {
+                                <span>@Model.ConstructionRequest?.MaintenanceService?.ServiceName</span>
+                            }
+                            else
+                            {
+                                <span>Không tìm thấy dịch vụ</span>
+                            }
+                            <nav class="bradcaump-inner">
+                                <a class="breadcrumb-item" asp-page="/User/Service/Index">Dịch vụ của tôi</a>
+                                <span class="brd-separetor">-</span>
+                                <span class="breadcrumb-item active">Chi tiết dịch vụ</span>
+                            </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Bradcaump area -->
+<input name="requestId" hidden value="@Model.ConstructionRequest?.RequestId" />
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="htc__bst__construc">
+                <!-- Form Begins -->
+                <div class="form">
+                    <!-- Progress Bar  -->
+                    <div class="progressbar">
+                        <div class="progress" id="progress"></div>
+                        <div class="progress-step progress-step-active" data-title="Chờ xử lý"></div>
+                        <div class="progress-step" data-title="Đã duyệt"></div>
+                        <div class="progress-step" data-title="Đang thi công"></div>
+                        <div class="progress-step" data-title="Đã hoàn thành"></div>
+                    </div>
+
+                    <!-- Form item - Pending -->
+                    <div class="form-step form-step-active">
+                        <form method="put" name="detail-service" data-url="@Url.Page("/User/Service/Detail")" data-handler="UpdateService">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="maintenanceServiceId">Dịch vụ</label>
+                                        <select class="form-control"
+                                                id="maintenanceServiceId"
+                                                name="maintenanceServiceId"
+                                                required
+                                                data-value="@Model.ConstructionRequest?.MaintenanceServiceId"
+                                                disabled="@(Model.ConstructionRequest?.Status != (int)ConstructionRequestsStatus.Pending)">
+                                            @foreach (var service in Model.MaintenanceServices)
+                                            {
+                                                <option value="@service.ServiceId" data-expected-price="@service.Price">
+                                                    @service.ServiceName
+                                                </option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="costEstimate">Mức giá dự kiến</label>
+                                        <input type="text" class="form-control" id="costEstimate" name="costEstimate" value="@Model.ConstructionRequest?.CostEstimate?.ToString("C", new System.Globalization.CultureInfo("vi-VN"))" disabled>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="customDesignDescription">Mô tả</label>
+                                        @if (Model.ConstructionRequest?.Status != (int)ConstructionRequestsStatus.Pending)
+                                        {
+                                            @Html.Raw(@Model.ConstructionRequest?.CustomDesignDescription)
+                                        }
+                                        else
+                                        {
+                                            <textarea class="form-control" id="customDesignDescription"
+                                                      name="customDesignDescription" rows="3">@Model.ConstructionRequest?.CustomDesignDescription</textarea>
+                                        }
+                                    </div>
+                                </div>
+                                @* <a href="#" class="btn btn-next width-50 ml-auto">Next</a> *@
+
+                                @if (Model.ConstructionRequest?.Status == (int)ConstructionRequestsStatus.Pending)
+                                {
+                                    <div class="col-md-12">
+                                        <button type="submit" class="htc__btn">Sửa lại yêu cầu</button>
+                                    </div>
+                                }
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Form item - Approved -->
+                    <div class="form-step">
+                        @* <div class="btns-group">
+                        <a href="#" class="btn btn-prev">Back</a>
+                        <a href="#" class="btn btn-next">Next</a>
+                        </div> *@
+                    </div>
+
+                    <!-- Form item - InProgress -->
+                    <div class="form-step">
+                        @*  <div class="btns-group">
+                        <a href="#" class="btn btn-prev">Back</a>
+                        <a href="#" class="btn btn-next">Next</a>
+                        </div> *@
+                    </div>
+
+                    <!-- Form item - Completed -->
+                    <div class="form-step">
+                        @*                         <div class="btns-group">
+                        <a href="#" class="btn btn-prev">Back</a>
+                        <input type="submit" value="Register" class="btn" />
+                        </div> *@
+                    </div>
+                </div>
+                <!-- Form Ends -->
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const prevBtns = document.querySelectorAll(".btn-prev");
+        const nextBtns = document.querySelectorAll(".btn-next");
+        const progress = document.querySelector(".progress");
+        const formSteps = document.querySelectorAll(".form-step");
+        const progressSteps = document.querySelectorAll(".progress-step");
+
+        let formStepsNum = 0;
+
+        /* Event Listener for Next Button. */
+        nextBtns.forEach((btn) => {
+            btn.addEventListener("click", () => {
+                formStepsNum++;
+                updateFormSteps();
+                updateProgressbar();
+            });
+        });
+
+        /* Event Listener for Back Button. */
+        prevBtns.forEach((btn) => {
+            btn.addEventListener("click", () => {
+                formStepsNum--;
+                updateFormSteps();
+                updateProgressbar();
+            });
+        });
+
+        /* Event click progressSteps */
+        progressSteps.forEach((progressStep, index) => {
+            progressStep.addEventListener("click", () => {
+                formStepsNum = index;
+                updateFormSteps();
+                updateProgressbar();
+            });
+        });
+
+        /* Updates Form Items */
+        function updateFormSteps() {
+            formSteps.forEach((formStep) => {
+                formStep.classList.contains("form-step-active") &&
+                    formStep.classList.remove("form-step-active")
+            })
+            formSteps[formStepsNum].classList.add("form-step-active");
+        }
+
+        /* Updates Progress Bar */
+        function updateProgressbar() {
+            progressSteps.forEach((progressStep, index) => {
+                if (index < formStepsNum + 1) {
+                    progressStep.classList.add('progress-step-active')
+
+
+                } else {
+                    progressStep.classList.remove('progress-step-active')
+                }
+            })
+            progress.style.width = ((formStepsNum) / (progressSteps.length - 1)) * 100 + "%";
+
+        }
+    </script>
+    <script src="~/js/ckeditor5/ckeditor.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            ClassicEditor
+            .create(document.querySelector('#customDesignDescription'))
+            .catch(error => {
+                console.error(error);
+            });
+
+            let lastStatus = @(Model.ConstructionRequest?.Status - 1);
+            if (lastStatus > 0) {
+                formStepsNum = lastStatus;
+                updateFormSteps();
+                updateProgressbar();
+            }
+
+
+            var maintenanceServiceId = $('#maintenanceServiceId').data('value');
+            $('#maintenanceServiceId').val(maintenanceServiceId);
+
+            $('#maintenanceServiceId').change(function () {
+                var costEstimate = $('#maintenanceServiceId option:selected').data('expected-price');
+                if (!costEstimate) {
+                    $('#costEstimate').val('Liên hệ');
+                } else {
+                    costEstimate = parseFloat(costEstimate);
+                    $('#costEstimate').val(costEstimate.toLocaleString('vi-VN', {style: 'currency', currency: 'VND'}));
+                }
+            });
+
+            $('form[name="detail-service"]').submit(async function (e) {
+                e.preventDefault();
+                var maintenanceServiceId = $('#maintenanceServiceId').val();
+                var customDesignDescription = $('#customDesignDescription').val();
+                var url = $(this).data('url');
+                var handler = $(this).data('handler');
+                var id = $('input[name="requestId"]').val();
+
+                let cf = await Swal.fire({
+                    title: 'Bạn có chắc chắn muốn cập nhật yêu cầu này?',
+                    text: "Hành động này không thể hoàn tác!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Đồng ý',
+                    cancelButtonText: 'Hủy'
+                });
+                if (!cf.isConfirmed) return;
+
+                let { success, message } = await $.callAjax(`${url}?handler=${handler}&id=${id}`, 'PUT', {
+                    maintenanceServiceId: maintenanceServiceId,
+                    customDesignDescription: customDesignDescription
+                });
+
+                if (!success) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: message
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Cập nhật yêu cầu thành công!',
+                        text: message
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                }
+            });
+        });
+    </script>
+}

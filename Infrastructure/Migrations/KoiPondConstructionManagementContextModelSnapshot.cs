@@ -40,6 +40,9 @@ namespace Infrastructure.Migrations
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
 
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("RequestId")
                         .HasColumnType("int")
                         .HasColumnName("RequestID");
@@ -50,6 +53,9 @@ namespace Infrastructure.Migrations
 
                     b.Property<int?>("Step")
                         .HasColumnType("int");
+
+                    b.Property<string>("StepInfo")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
@@ -96,6 +102,9 @@ namespace Infrastructure.Migrations
 
                     b.Property<int?>("MaintenanceServiceId")
                         .HasColumnType("int");
+
+                    b.Property<string>("RejectReason")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Status")
                         .HasMaxLength(50)
@@ -255,9 +264,9 @@ namespace Infrastructure.Migrations
                     b.Property<int>("Order")
                         .HasColumnType("int");
 
-                    b.Property<string>("Price")
+                    b.Property<decimal?>("Price")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<bool>("RequireDesign")
                         .HasColumnType("bit");
@@ -474,7 +483,7 @@ namespace Infrastructure.Migrations
                         .HasConstraintName("FK__Construct__Desig__403A8C7D");
 
                     b.HasOne("Domain.Entities.MaintenanceService", "MaintenanceService")
-                        .WithMany()
+                        .WithMany("ConstructionRequests")
                         .HasForeignKey("MaintenanceServiceId");
 
                     b.Navigation("Customer");
@@ -568,6 +577,8 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.MaintenanceService", b =>
                 {
+                    b.Navigation("ConstructionRequests");
+
                     b.Navigation("ServiceRequests");
                 });
 

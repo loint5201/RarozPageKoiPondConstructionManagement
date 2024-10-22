@@ -10,6 +10,23 @@ namespace Application.Common.Mappings
         {
             CreateMap<ConstructionRequestDTO, ConstructionRequest>()
                 .ReverseMap();
+
+            CreateMap<ConstructionProcessResponse, ConstructionProcess>()
+                .ReverseMap();
+
+            CreateMap<ConstructionProcessRequest, ConstructionProcess>()
+                .ReverseMap();
+
+            CreateMap<RegisterRequest, User>()
+               .ForMember(dest => dest.Avatar, opt => opt.Ignore())
+               .ReverseMap();
+
+            CreateMap<UserResponse, User>()
+               .ReverseMap();
+
+            CreateMap<MaintenanceServiceDTO, MaintenanceService>()
+                .ForMember(dest => dest.ServiceImage, opt => opt.Ignore())
+                .ReverseMap();
         }
     }
 }

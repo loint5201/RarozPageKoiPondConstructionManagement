@@ -16,6 +16,8 @@ public partial class ConstructionRequest
 
     public int? Status { get; set; } = null!;
 
+    public string? RejectReason { get; set; } = null!;
+
     public DateTime CreatedAt { get; set; }
 
     public DateTime UpdatedAt { get; set; }

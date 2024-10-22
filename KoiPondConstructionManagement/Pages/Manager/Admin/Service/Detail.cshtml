@@ -1,0 +1,109 @@
+﻿@page
+@model KoiPondConstructionManagement.Pages.Manager.Admin.Service.DetailModel
+@{
+}
+<img id="avatar-preview" src="~/uploads/@Model.MaintenanceService?.ServiceImage" alt="Service" style="width: 500px" />
+<form method="post" name="frm-detail">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <label for="avatar">Hình ảnh</label>
+                <input class="form-control mt-3" type="file" id="avatar" name="avatar" accept="image/*">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="serviceName">Tên dịch vụ</label>
+                <input class="form-control" id="serviceName" asp-for="MaintenanceServiceDTO.ServiceName" value="@Model.MaintenanceService.ServiceName">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="price">Mức giá</label>
+                <input class="form-control" id="price" asp-for="MaintenanceServiceDTO.Price" value="@Model.MaintenanceService.Price">
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="order">Vị trí hiển thị</label>
+                <input class="form-control" id="order" asp-for="MaintenanceServiceDTO.Order" value="@Model.MaintenanceService.Order">
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="form-group">
+                <label for="description">Mô tả</label>
+                <textarea class="form-control" id="description" name="MaintenanceServiceDTO.Description" rows="3">@Model.MaintenanceService.Description</textarea>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <button type="submit" class="btn btn-primary">Lưu</button>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script src="~/js/ckeditor5/ckeditor.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            ClassicEditor
+                .create(document.querySelector('#description'))
+                .then(editor => {
+                    const data = editor.getData();
+                    $('#description').val(data);
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+
+            $('#avatar').change(function (e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (event) {
+                        $('#avatar-preview').attr('src', event.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // xử lý submit form
+            $('form[name="frm-detail"]').submit(async function (e) {
+                e.preventDefault();
+                let formData = new FormData(this);
+                let action = this.action;
+                let fileInput = document.getElementById('avatar');
+                if (fileInput.files.length > 0) {
+                    formData.append('MaintenanceServiceDTO.ServiceImage', fileInput.files[0]);
+                }
+
+                let { success, message, data } = await $.callAjax(action, 'POST', formData, {}, {
+                    contentType: false,
+                    processData: false,
+                });
+
+                if (success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Lưu thông tin thành công!',
+                        text: message
+                    }).then(() => {
+                        if (data) {
+                            window.location.href = action + '?id=' + data;
+                        } else {
+                            window.location.reload();
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lưu thông tin thất bại!',
+                        text: message
+                    });
+                }
+            });
+        });
+    </script>
+}

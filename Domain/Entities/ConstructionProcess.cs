@@ -8,6 +8,10 @@ public partial class ConstructionProcess
 
     public int? Step { get; set; } = null!;
 
+    public string? StepInfo { get; set; } = null!;
+
+    public string? Note { get; set; } = null!;
+
     public int? Status { get; set; } = null!;
 
     public int? AssignedStaffId { get; set; }

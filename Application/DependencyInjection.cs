@@ -31,6 +31,9 @@ public static class DependencyInjection
         services.AddScoped<IMaintenanceService, MaintenanceService>();
         services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
 
+        string uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+        services.AddScoped<IImageService>(provider => new ImageService(uploadPath));
+
         return services;
     }
 }

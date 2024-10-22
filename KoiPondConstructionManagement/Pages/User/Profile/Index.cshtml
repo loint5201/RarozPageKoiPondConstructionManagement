@@ -1,0 +1,194 @@
+﻿@page
+@model KoiPondConstructionManagement.Pages.User.Profile.IndexModel
+@{
+}
+<!-- Start Bradcaump area -->
+<div class="ht__bradcaump__area" data--black__overlay="6" style="background: rgba(0, 0, 0, 0) url('/images/bg/5.jpg') no-repeat scroll center center / cover ;">
+    <div class="ht__bradcaump__wrap">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="bradcaump__inner text-center">
+                        <h2 class="bradcaump-title">
+                            Hồ sơ của tôi</span>
+                            <nav class="bradcaump-inner">
+                                <a class="breadcrumb-item" asp-page="/Index">Trang chủ</a>
+                                <span class="brd-separetor">-</span>
+                                <span class="breadcrumb-item active">Hồ sơ của tôi</span>
+                            </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Bradcaump area -->
+<div class="container mt--30">
+    <form class="row gutters" method="post" name="frm-detail">
+        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="account-settings">
+                        <div class="user-profile">
+                            <div class="user-avatar text-center">
+                                @if (Model.CurrentUser?.Avatar == null)
+                                {
+                                    <img id="avatar-preview" src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Avatar" style="width: 50%">
+                                }
+                                else
+                                {
+                                    <img id="avatar-preview" src="~/uploads/@Model.CurrentUser?.Avatar" alt="Avatar" style="width: 50%">
+                                }
+                                <input class="form-control mt-3" type="file" id="avatar" name="avatar" accept="image/*">
+                            </div>
+                            <h5 class="user-name text-center mt--30">@Model.CurrentUser?.FullName</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-12">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="row gutters">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="fullName">Họ và tên</label>
+                                <input type="text" class="form-control" id="fullName" asp-for="UserModel.FullName" placeholder="Nhập họ và tên" value="@Model.CurrentUser?.FullName">
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="eMail">Email</label>
+                                <input type="email" class="form-control" id="eMail" asp-for="UserModel.Email" placeholder="Nhập Email" value="@Model.CurrentUser?.Email">
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="phone">Số điện thoại</label>
+                                <input type="text" class="form-control" id="phone" asp-for="UserModel.PhoneNumber" placeholder="Nhập số điện thoại" value="@Model.CurrentUser?.PhoneNumber">
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="role">Vai trò</label>
+                                <div class="form-control">@Model?.Roles?.FirstOrDefault(role => role.RoleId == Model.CurrentUser?.RoleId)?.RoleNameVietnam</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row gutters">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="Street">Địa chỉ</label>
+                                <input type="text" class="form-control" id="Street" asp-for="UserModel.Address" placeholder="Nhập địa chỉ" value="@Model.CurrentUser?.Address">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row gutters">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="text-right">
+                                <button type="button" id="submit" class="btn btn-primary btn-edit">Sửa</button>
+                                <button type="button" id="submit" class="btn btn-secondary btn-cancel">Hủy</button>
+                                <button type="submit" id="submit" class="btn btn-primary btn-update">Cập nhật</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.btn-edit').click(function () {
+                $('.form-control').removeAttr('disabled');
+                $('.btn-edit').hide();
+                $('.btn-cancel').show();
+                $('.btn-update').show();
+            });
+
+            $('.btn-cancel').click(function () {
+                $('.form-control').attr('disabled', 'disabled');
+                $('.btn-edit').show();
+                $('.btn-cancel').hide();
+                $('.btn-update').hide();
+            });
+
+            $('.btn-edit').show();
+            $('.btn-cancel').hide();
+            $('.btn-update').hide();
+            $('.form-control').attr('disabled', 'disabled');
+
+            // Preview ảnh khi người dùng chọn
+            $('#avatar').change(function (e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (event) {
+                        $('#avatar-preview').attr('src', event.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            $("form[name='frm-detail']").validate({
+                rules: {
+                    fullName: "required",
+                    eMail: {
+                        required: true,
+                        email: true
+                    },
+                    phone: {
+                        required: true,
+                        number: true
+                    },
+                    Street: "required"
+                },
+                messages: {
+                    fullName: "Vui lòng nhập họ và tên",
+                    eMail: {
+                        required: "Vui lòng nhập email",
+                        email: "Email không đúng định dạng"
+                    },
+                    phone: {
+                        required: "Vui lòng nhập số điện thoại",
+                        number: "Số điện thoại không đúng định dạng"
+                    },
+                    Street: "Vui lòng nhập địa chỉ"
+                },
+                submitHandler: async function (form) {
+                    event.preventDefault();
+                    var data = new FormData(form);
+                    let fileInput = document.getElementById('avatar');
+                    if (fileInput.files.length > 0) {
+                        data.append('UserModel.Avatar', fileInput.files[0]);
+                    }
+                    let { success, message } = await $.callAjax('/User/Profile', 'POST', data, {}, {
+                        contentType: false,
+                        processData: false,
+                    });
+                    if (success) {
+                        $('.form-control').attr('disabled', 'disabled');
+                        $('.btn-edit').show();
+                        $('.btn-cancel').hide();
+                        $('.btn-update').hide();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Cập nhật thông tin thành công!',
+                            text: message
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: message
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+}

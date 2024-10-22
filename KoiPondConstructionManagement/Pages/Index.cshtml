@@ -59,7 +59,7 @@
                         <div class="service foo">
                             <div class="service__thumb">
                                 <a asp-page="/Service/Index" asp-route-id="@sevice.ServiceId">
-                                    <img src="@sevice.ServiceImage" alt="service images" width="300px" height="220px">
+                                    <img src="~/uploads/@sevice.ServiceImage" alt="@sevice.ServiceName" width="300px" height="220px">
                                 </a>
                                 <div class="service__hover">
                                     <div class="service__action">
@@ -151,7 +151,7 @@
 </section>
 <!-- End Counter Up Area -->
 <!-- Start Latest Project Area -->
-<section class="htc__latest__project__area ptb--150 bg__white">
+<section class="htc__latest__project__area ptb--80 bg__white">
     <div class="container">
         <div class="row">
             <div class="col-xs-12">
@@ -273,7 +273,7 @@
 @await Html.PartialAsync("_OurTeamPartial")
 
 <!-- Start Testimonial Area -->
-<section class="htc__testimonial__area testimonial__2 ptb--150 bg__white">
+<section class="htc__testimonial__area testimonial__2 ptb--80 bg__white">
     <div class="container">
         <div class="row">
             <div class="col-md-4 col-lg-4 col-sm-12 col-xs-12">
@@ -370,7 +370,7 @@
 </section>
 <!-- End Testimonial Area -->
 <!-- Start Blog Area -->
-<section class="htc__blog__area htc__blog--2 ptb--150 bg__gray">
+<section class="htc__blog__area htc__blog--2 ptb--80 bg__gray">
     <div class="container">
         <div class="row">
             <div class="section__title text-center">

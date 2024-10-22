@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces;
+using Domain.Enums;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -53,6 +54,7 @@ namespace KoiPondConstructionManagement.Pages
                     new(ClaimTypes.Email, user.Email),
                     new(ClaimTypes.Role, user.RoleId.ToString()),
                     new(ClaimTypes.MobilePhone, user.PhoneNumber),
+                    new("Avatar", user.Avatar ?? ""),
                 };
                 var claimsIdentity = new ClaimsIdentity(claims, "login");
                 var authProperties = new AuthenticationProperties
@@ -67,11 +69,18 @@ namespace KoiPondConstructionManagement.Pages
                 // Đăng nhập người dùng
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
 
+                return user.RoleId switch
+                {
+                    (int)AppRoles.Manager => RedirectToPage("/Manager/Admin/Index"),
+                    (int)AppRoles.Customer => RedirectToPage("/Index"),
+                    (int)AppRoles.Construction_Staff => RedirectToPage("/Manager/Construction/Index"),
+                    (int)AppRoles.Design_Staff => RedirectToPage("/Manager/Design/Index"),
+                    (int)AppRoles.Consulting_Staff => RedirectToPage("/Manager/Consulting/Index"),
+                    _ => RedirectToPage("/Index"),
+                };
 
-                // Đăng nhập thành công, điều hướng tới trang khác
-                return RedirectToPage("/Index");
             }
-            ModelState.AddModelError("LoginModel", "Invalid login attempt.");
+            ModelState.AddModelError("LoginModel", "Sai tên đăng nhập hoặc mật khẩu.");
             return Page();
         }
 
@@ -88,9 +97,12 @@ namespace KoiPondConstructionManagement.Pages
             var result = await _userService.RegisterAsync(RegisterModel);
             if (result.Success)
             {
-                ModelState.AddModelError("RegisterModel", "Register successfully.");
+                ModelState.AddModelError("RegisterModel", "Đăng ký thành công.");
             }
-            ModelState.AddModelError("RegisterModel", result.ErrorMessage);
+            else
+            {
+                ModelState.AddModelError("RegisterModel", result.ErrorMessage ?? "");
+            }
             return Page();
         }
     }

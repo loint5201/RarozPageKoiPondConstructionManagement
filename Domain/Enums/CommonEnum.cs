@@ -47,4 +47,14 @@
         Rejected = 5, // Từ chối
         Cancelled = 6, // Đã hủy
     }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public enum ConstructionProcessStatus
+    {
+        Pending = 0, // Chờ xử lý
+        InProgress = 1, // Đang thi công
+        Completed = 2, // Đã hoàn thành
+    }
 }

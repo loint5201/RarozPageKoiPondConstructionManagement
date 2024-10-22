@@ -8,5 +8,6 @@
         public string? PhoneNumber { get; set; }
         public string? Address { get; set; }
         public int? RoleId { get; set; }
+        public string? Avatar { get; set; }
     }
 }

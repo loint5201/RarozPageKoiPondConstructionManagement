@@ -8,12 +8,12 @@ namespace Application.Validators
         public LoginRequestValidator()
         {
             RuleFor(x => x.Email)
-                .NotEmpty().WithMessage("Email is required.")
-                .EmailAddress().WithMessage("Invalid email format.");
+                .NotEmpty().WithMessage("Email không được để trống.")
+                .EmailAddress().WithMessage("Sai định dạng email.");
 
             RuleFor(x => x.Password)
-                .NotEmpty().WithMessage("Password is required.")
-                .MinimumLength(6).WithMessage("Password must be at least 6 characters long.");
+                .NotEmpty().WithMessage("Mật khẩu không được để trống.")
+                .MinimumLength(6).WithMessage("Mật khẩu phải có ít nhất 6 ký tự.");
         }
 
     }
@@ -23,21 +23,21 @@ namespace Application.Validators
         public RegisterRequestValidator()
         {
             RuleFor(x => x.FullName)
-                .NotEmpty().WithMessage("Full name is required.");
+                .NotEmpty().WithMessage("Họ và tên không được để trống.");
 
             RuleFor(x => x.Email)
-                .NotEmpty().WithMessage("Email is required.")
-                .EmailAddress().WithMessage("Invalid email format.");
+                .NotEmpty().WithMessage("Email không được để trống.")
+                .EmailAddress().WithMessage("Sai định dạng email.");
 
             RuleFor(x => x.Password)
-                .NotEmpty().WithMessage("Password is required.")
-                .MinimumLength(6).WithMessage("Password must be at least 6 characters long.");
+                .NotEmpty().WithMessage("Mật khẩu không được để trống.")
+                .MinimumLength(6).WithMessage("Mật khẩu phải có ít nhất 6 ký tự.");
 
             RuleFor(x => x.PhoneNumber)
-                .NotEmpty().WithMessage("Phone number is required.");
+                .NotEmpty().WithMessage("Số điện thoại không được để trống.");
 
             RuleFor(x => x.Address)
-                .NotEmpty().WithMessage("Address is required.");
+                .NotEmpty().WithMessage("Địa chỉ không được để trống.");
         }
     }
 }

@@ -1,3 +1,12 @@
 ﻿@{
-    Layout = "_CommonLayout";
+    var path = Context.Request.Path.Value.ToLower();
+    bool isManager = path.StartsWith("/manager");
+    if (User.IsCustomer() || !User.Identity.IsAuthenticated || !isManager)
+    {
+        Layout = "_CommonLayout";
+    }
+    else
+    {
+        Layout = "_AdminLayout";
+    }
 }

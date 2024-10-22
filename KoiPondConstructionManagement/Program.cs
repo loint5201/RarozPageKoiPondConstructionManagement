@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 
 namespace KoiPondConstructionManagement
 {
@@ -11,10 +14,18 @@ namespace KoiPondConstructionManagement
             // Add services to the container.
             builder.Services.AddRazorPages();
 
+            JsonConvert.DefaultSettings = () =>
+            {
+                var settings = new JsonSerializerSettings();
+                settings.Converters.Add(new StringEnumConverter());
+                settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                return settings;
+            };
+
             builder.Services.AddApplicationServices();
             builder.Services.AddInfrastructureServices(builder.Configuration);
             builder.Services.AddWebServices();
-
+            builder.WebHost.UseStaticWebAssets();
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                .AddCookie(options =>
                {
@@ -45,7 +56,7 @@ namespace KoiPondConstructionManagement
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
-                endpoints.MapFallbackToPage("/NotFound/Index"); 
+                endpoints.MapFallbackToPage("/Shared/NotFound");
             });
 
             app.Run();

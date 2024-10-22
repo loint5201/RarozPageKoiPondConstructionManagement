@@ -35,7 +35,8 @@ namespace Application.Services
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
                 Address = user.Address,
-                RoleId = user.RoleId
+                RoleId = user.RoleId,
+                Avatar = user.Avatar
             };
         }
 
