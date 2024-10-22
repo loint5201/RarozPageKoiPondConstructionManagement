@@ -1,5 +1,4 @@
 ﻿using Domain.Entities;
-using Domain.Enums;
 using Domain.ResponseData;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
