@@ -28,4 +28,11 @@
     <Folder Include="wwwroot\lib\datatables\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Pages\Shared\_ConstructionProcessStatusPartial.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

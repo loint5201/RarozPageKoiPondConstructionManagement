@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.ResponseData;
@@ -16,6 +16,10 @@ namespace KoiPondConstructionManagement.Pages.Manager.Admin.Service
         private KoiPondConstructionManagementContext _context;
         public ConstructionRequest? ConstructionRequest;
         private IMapper _mapper;
+
+        public List<ConstructionProcess> LstConstructionProcess;
+
+        public CustomerOrderHistory? CustomerOrderHistory;
         public string UserSystem { get; set; }
         public string ConstructionProcesses { get; set; }
         public RequestDetailModel(KoiPondConstructionManagementContext context, IMapper mapper)
@@ -43,9 +47,16 @@ namespace KoiPondConstructionManagement.Pages.Manager.Admin.Service
             var systemUsersResponse = _mapper.Map<List<UserResponse>>(systemUsers);
             UserSystem = JsonConvert.SerializeObject(systemUsersResponse);
 
-            var lstProcess = await _context.ConstructionProcesses.Where(x => x.RequestId == id).ToListAsync();
-            var processResponse = _mapper.Map<List<ConstructionProcessResponse>>(lstProcess);
+            LstConstructionProcess = await _context.ConstructionProcesses
+                                            .Include(x => x.AssignedStaff)
+                                            .Where(x => x.RequestId == id)
+                                            .ToListAsync();
+
+            var processResponse = _mapper.Map<List<ConstructionProcessResponse>>(LstConstructionProcess);
             ConstructionProcesses = JsonConvert.SerializeObject(processResponse);
+
+            CustomerOrderHistory = await _context.CustomerOrderHistories
+                    .FirstOrDefaultAsync(x => x.RequestId == id);
         }
 
         public async Task<IActionResult> OnPostUpdateProcessAsync(int requestId, List<ConstructionProcessRequest> process)
@@ -89,11 +100,14 @@ namespace KoiPondConstructionManagement.Pages.Manager.Admin.Service
                         continue;
                     }
 
+                    if (processEntity.Status != item.Status)
+                    {
+                        processEntity.UpdatedAt = DateTime.Now;
+                    }
                     processEntity.Status = item.Status;
                     processEntity.Note = item.Note;
                     processEntity.StepInfo = item.StepInfo;
                     processEntity.AssignedStaffId = item.AssignedStaffId;
-                    processEntity.UpdatedAt = DateTime.Now;
                     _context.ConstructionProcesses.Update(processEntity);
                 }
 
@@ -106,6 +120,71 @@ namespace KoiPondConstructionManagement.Pages.Manager.Admin.Service
             }
 
             return new JsonResult(serviceResponse);
+        }
+
+        public async Task<IActionResult> OnPostCreateOrderAsync(int requestId, CustomerOrderHistory order)
+        {
+            var serviceResponse = new ServiceResponse();
+            try
+            {
+                var request = await _context.ConstructionRequests.FirstOrDefaultAsync(x => x.RequestId == requestId);
+                if (request == null)
+                {
+                    return NotFound();
+                }
+
+                var orderEntity = await _context.CustomerOrderHistories.FirstOrDefaultAsync(x => x.RequestId == requestId);
+                if (orderEntity == null)
+                {
+                    order.RequestId = requestId;
+                    order.CustomerId = request.CustomerId;
+                    order.CreatedAt = DateTime.Now;
+                    _context.CustomerOrderHistories.Add(order);
+                }
+                else
+                {
+                    orderEntity.PaymentMethod = order.PaymentMethod;
+                    orderEntity.PaymentStatus = order.PaymentStatus;
+                    orderEntity.ActualCost = order.ActualCost;
+                    _context.CustomerOrderHistories.Update(orderEntity);
+                }
+
+                await _context.SaveChangesAsync();
+                serviceResponse.OnSuccess();
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.OnException(ex);
+            }
+
+            return new JsonResult(serviceResponse);
+        }
+
+        public async Task<IActionResult> OnPostUploadFile(IFormFile upload)
+        {
+            if (upload != null && upload.Length > 0)
+            {
+                // Đường dẫn lưu file
+                var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads/temps");
+                Directory.CreateDirectory(uploadsPath); // Tạo thư mục nếu chưa tồn tại
+
+                var filePath = Path.Combine(uploadsPath, upload.FileName);
+
+                // Lưu file
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await upload.CopyToAsync(stream);
+                }
+
+                // Trả về JSON với đường dẫn file đã upload
+                return new JsonResult(new
+                {
+                    uploaded = 1,
+                    url = $"/uploads/temps/{upload.FileName}" // URL để truy cập file
+                });
+            }
+
+            return BadRequest();
         }
     }
 }

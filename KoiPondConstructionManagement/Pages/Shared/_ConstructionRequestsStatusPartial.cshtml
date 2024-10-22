@@ -1,28 +1,35 @@
 ﻿@using Domain.Entities
 @using Domain.Enums
-@model ConstructionRequest
+@model int
 @{
     string status = "";
-    switch (Model.Status)
+    string color = "";
+    switch (Model)
     {
         case (int)ConstructionRequestsStatus.Pending:
-            status = "Chờ xác nhận";
+            status = "Chờ xử lý";
+            color = "badge-warning";
             break;
         case (int)ConstructionRequestsStatus.Approved:
-            status = "Đã xác nhận";
+            status = "Đã duyệt";
+            color = "badge-primary";
             break;
         case (int)ConstructionRequestsStatus.InProgress:
             status = "Đang thi công";
+            color = "badge-primary";
             break;
         case (int)ConstructionRequestsStatus.Completed:
             status = "Đã hoàn thành";
+            color = "badge-success";
             break;
         case (int)ConstructionRequestsStatus.Rejected:
             status = "Đã từ chối";
+            color = "badge-danger";
             break;
         case (int)ConstructionRequestsStatus.Cancelled:
             status = "Đã hủy";
+            color = "badge-danger";
             break;
     }
 }
-<span class="badge badge-pill badge-primary">@status</span>
+<span class="badge badge-pill @color">@status</span>

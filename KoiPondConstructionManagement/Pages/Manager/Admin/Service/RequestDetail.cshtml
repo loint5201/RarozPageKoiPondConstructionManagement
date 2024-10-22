@@ -8,6 +8,48 @@
 <!-- DataTales Example -->
 <div class="card shadow mb-4">
     <div class="card-body" style="z-index: 0">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group" style="margin-bottom: 0">
+                    <label for="quickStatus">Trạng thái</label>
+                    <select class="form-control" id="quickStatus" name="quickStatus">
+                        <option value="">-- Chọn trạng thái --</option>
+                        @foreach (var item in Enum.GetValues(typeof(ConstructionRequestsStatus)))
+                        {
+                            if ((int)item == (int)ConstructionRequestsStatus.Cancelled) continue;
+                            var isSelected = (int)item == (int)Model.ConstructionRequest?.Status;
+                            if (isSelected)
+                            {
+                                <option value="@((int)item)" selected>
+                                    @await Html.PartialAsync("_ConstructionRequestsStatusPartial", (int)item)
+                                </option>
+                            }
+                            else
+                            {
+                                <option value="@((int)item)">
+                                    @await Html.PartialAsync("_ConstructionRequestsStatusPartial", (int)item)
+                                </option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-md-3 align-content-end">
+                <div class="form-group" style="margin-bottom: 0">
+                    <label for="save"></label>
+                    <button class="btn btn-primary"
+                            id="save"
+                            style="padding: .375rem .75rem"
+                            btn-action="approved"
+                            btn-url="@Url.Page("/Manager/Admin/Service/Request")"
+                            btn-path="ChangeStatus"
+                            btn-id="@Model.ConstructionRequest?.RequestId">
+                        Lưu
+                    </button>
+                </div>
+            </div>
+        </div>
         <!-- Form Begins -->
         <div class="form">
             <!-- Progress Bar  -->
@@ -80,7 +122,6 @@
                                 </div>
                             </div>
                         </div>
-                        @* <a href="#" class="btn btn-next width-50 ml-auto">Next</a> *@
                     </div>
                 </div>
             </div>
@@ -98,7 +139,7 @@
                                     <th>Thông tin</th>
                                     <th width="250px">Giao việc cho</th>
                                     <th>Trạng thái</th>
-                                    <th>Ghi chú</th>
+                                    <th style="max-width: 500px">Ghi chú</th>
                                     <th width="120px" class="text-center">Hành động</th>
                                 </tr>
                             </thead>
@@ -116,18 +157,98 @@
 
             <!-- Form item - InProgress -->
             <div class="form-step">
-                @* <div class="btns-group">
-                <a href="#" class="btn btn-prev">Back</a>
-                <a href="#" class="btn btn-next">Next</a>
-                </div> *@
+                @if (Model.LstConstructionProcess != null && Model.LstConstructionProcess.Count > 0)
+                {
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <h4>Quy trình thi công</h4>
+                            <table class="table table-bordered" id="inProgressTable">
+                                <thead>
+                                    <tr>
+                                        <th width="100px">Bước</th>
+                                        <th class="text-left">Thông tin</th>
+                                        <th width="250px" class="text-left">Giao việc cho</th>
+                                        <th class="text-center">Trạng thái</th>
+                                        <th class="text-left">Ghi chú</th>
+                                        <th class="text-center">Thời gian cập nhật</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Rows will be added dynamically here -->
+                                    @foreach (var process in Model.LstConstructionProcess)
+                                    {
+                                        <tr>
+                                            <td class="text-right">@process.Step</td>
+                                            <td class="text-left">@Html.Raw(process.StepInfo)</td>
+                                            <td class="text-left">@Html.Raw(process.AssignedStaff?.FullName)</td>
+                                            <td class="text-center">@await Html.PartialAsync("_ConstructionProcessStatusPartial", process.Status)</td>
+                                            <td class="text-left">@Html.Raw(process.Note)</td>
+                                            <td class="text-center">@process.UpdatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
             </div>
 
             <!-- Form item - Completed -->
             <div class="form-step">
-                @* <div class="btns-group">
-                <a href="#" class="btn btn-prev">Back</a>
-                <input type="submit" value="Register" class="btn" />
-                </div> *@
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <h4>Lịch sử đơn hàng</h4>
+                        @if (Model.CustomerOrderHistory != null)
+                        {
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="text-right">Mã đơn hàng</th>
+                                        <th class="text-right">Tổng tiền</th>
+                                        <th class="text-center">Phương thức thanh toán</th>
+                                        <th class="text-center">Trạng thái</th>
+                                        <th class="text-center">Thời gian tạo</th>
+                                        <th class="text-center">Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Rows will be added dynamically here -->
+                                    <tr>
+                                        <td class="text-right">@Model.CustomerOrderHistory.HistoryId</td>
+                                        <td class="text-right">@Model.CustomerOrderHistory.ActualCost.ToString("C", new System.Globalization.CultureInfo("vi-VN"))</td>
+                                        <td class="text-center">@await Html.PartialAsync("_PaymentMethodPartial", @Model.CustomerOrderHistory.PaymentMethod)</td>
+                                        <td class="text-center">@await Html.PartialAsync("_PaymentStatusPartial", @Model.CustomerOrderHistory.PaymentStatus)</td>
+                                        <td class="text-center">@Model.CustomerOrderHistory.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td class="text-center">
+                                            <button 
+                                                class="btn btn-primary btn-sm m-auto" 
+                                                btn-action="createOrder" 
+                                                btn-url="@Url.Page("/Manager/Admin/Service/RequestDetail")" 
+                                                btn-path="CreateOrder" 
+                                                btn-id="@Model.ConstructionRequest?.RequestId">Cập nhật
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <p>Bạn chưa tạo đơn hàng cho yêu cầu này.</p>
+                            <!-- Nút tạo đơn hàng -->
+                            <div class="text-center">
+                                <button 
+                                    class="btn btn-primary m-auto"
+                                    btn-action="createOrder"
+                                    btn-url="@Url.Page("/Manager/Admin/Service/RequestDetail")"
+                                    btn-path="CreateOrder"
+                                    btn-id="@Model.ConstructionRequest?.RequestId">
+                                    Tạo đơn hàng
+                                </button>
+                            </div>
+                        }
+                    </div>
+                </div>
             </div>
         </div>
         <!-- Form Ends -->
@@ -135,6 +256,7 @@
 </div>
 
 @section Scripts {
+    <script src="~/js/ckeditor5/ckeditor.min.js"></script>
     <script>
         const prevBtns = document.querySelectorAll(".btn-prev");
         const nextBtns = document.querySelectorAll(".btn-next");
@@ -195,7 +317,6 @@
 
         }
     </script>
-    <script src="~/js/ckeditor5/ckeditor.min.js"></script>
     <script>
         $(document).ready(function () {
             let lastStatus = @(Model.ConstructionRequest?.Status - 1);
@@ -255,14 +376,62 @@
                             <td><input required type="number" min="1" class="form-control" name="step" value="${step.step ?? 1}"></td>
                             <td><input required type="text" class="form-control" name="stepInfo" value="${step.stepInfo ?? ''}" data-field="stepInfo"></td>
                             <td>${generateEmployeeSelect(step.assignedStaffId)}</td> <!-- Dropdown cho nhân viên -->
-                                    <td>${generateStatusSelect(step.status ?? 0)}</td> <!-- Dropdown cho trạng thái -->
-                                    <td><input type="text" class="form-control" name="note" value="${step.note ?? ''}" data-field="note"></td>
+                            <td>${generateStatusSelect(step.status ?? 0)}</td> <!-- Dropdown cho trạng thái -->
+                            <td style="max-width: 500px"><textarea is-ckeditor type="text" class="form-control" name="note" data-field="note">${step.note}</textarea></td>
                             <td class="text-center">
                                 <button type="button" class="btn btn-sm btn-danger deleteRowBtn">Xóa</button>
                             </td>
                         </tr>
                     `;
+
                     tableBody.append(newRow);
+                });
+
+                // Tạo mới CKEditor cho tất cả có attribute is-ckeditor
+                $('[is-ckeditor]').each(async function () {
+                    // Kiểm tra nếu CKEditor chưa được khởi tạo
+                    if (!$(this).data('ckeditor-initialized')) {
+                        const editor = await ClassicEditor.create(this, {
+                            toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'undo', 'redo', 'imageUpload'],
+                            // toolbar: ['FontFamily', 'Heading', 'Paragraph', '|', 'bold', 'italic', 'Underline', 'FontColor', 'FontSize', 'Highlight', '|', 'numberedList', 'bulletedList', 'List', 'outdent', 'indent', '|', 'alignment:left', 'alignment:right', 'alignment:center', 'alignment:justify', '|', 'Link', 'ImageUpload', 'MediaEmbed', '|', 'undo', 'redo', 'PasteFromOffice', 'Autoformat', 'Essentials', 'TextTransformation'],
+                            heading: {
+                                options: [
+                                    { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+                                    { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+                                    { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' }
+                                ]
+                            },
+                            image: {
+                                toolbar: ['imageTextAlternative', '|', 'imageStyle:alignLeft', 'imageStyle:full', 'imageStyle:alignRight'],
+                                styles: ['full', 'alignLeft', 'alignRight']
+                            },
+                            ckfinder: {
+                                uploadUrl: '/Manager/Admin/Service/RequestDetail?handler=UploadFile',
+                                customXHR: (xhr) => {
+                                    xhr.setRequestHeader('RequestVerificationToken', getToken());
+                                }
+                            },
+                            mediaEmbed: {
+                                previewsInData: true
+                            },
+                            fontSize: {
+                                options: [9, 11, 13, 'default', 17, 19, 21, 23, 25, 27]
+                            },
+                            indentBlock: {
+                                offset: 1,
+                                unit: 'em'
+                            }
+                        });
+                        editor.setData(this.value);
+                        editor.model.document.on('change:data', () => {
+                            // this.value = editor.getData();
+                            const row = $(this).closest('tr');
+                            const index = row.data('index');
+                            stepsList[index].note = editor.getData(); // Cập nhật giá trị vào danh sách
+                        });
+                        // Đánh dấu rằng CKEditor đã được khởi tạo
+                        $(this).data('ckeditor-initialized', true);
+                    }
                 });
             }
 
@@ -314,7 +483,6 @@
                 }
             }
 
-
             // Submit button action
             submitBtn.click(async function () {
                 const requestId = $('input[name="requestId"]').val();
@@ -329,7 +497,7 @@
                         return;
                     }
                 }
-                
+
                 let { success, message, data } = await $.callAjax(`/Manager/Admin/Service/RequestDetail?handler=UpdateProcess&requestId=${requestId}`, 'POST', {
                     process: stepsList
                 });
@@ -351,5 +519,131 @@
             });
         });
     </script>
+    <script>
+        $(document).ready(function () {
+            // tạo base btn click
+            $('a[btn-action], button[btn-action]').click(async function () {
+                var action = $(this).attr('btn-action');
+                var url = $(this).attr('btn-url');
+                var path = $(this).attr('btn-path');
+                var id = $(this).attr('btn-id');
+                var status = $('#quickStatus').val();
+                var optionStatus = $('#quickStatus option:selected').text();
 
+                if (!url || !path) return;
+                action = action.toLowerCase();
+
+                if (action == "createorder") {
+                    // Tạo form trong Swal với Bootstrap
+                    let { value: formValues } = await Swal.fire({
+                        title: 'Tạo đơn hàng',
+                        html: `
+                            <div class="form-group text-left">
+                                <label for="actualCost">Tổng tiền</label>
+                                <input id="actualCost" type="number" value="@(Model.CustomerOrderHistory?.ActualCost ?? 0)" class="form-control" placeholder="Nhập tổng tiền" style="margin-bottom: 15px;">
+                            </div>
+                            
+                            <div class="form-group text-left">
+                                <label for="paymentMethod">Phương thức thanh toán</label>
+                                <select id="paymentMethod" class="form-control" style="margin-bottom: 15px;">
+                                    <option value="1" @(Model.CustomerOrderHistory?.PaymentMethod == 1 ? "selected" : "")>Tiền mặt</option>
+                                    <option value="2" @(Model.CustomerOrderHistory?.PaymentMethod == 2 ? "selected" : "")>Chuyển khoản</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group text-left">
+                                <label for="paymentStatus">Trạng thái thanh toán</label>
+                                <select id="paymentStatus" class="form-control">
+                                    <option value="1" @(Model.CustomerOrderHistory?.PaymentStatus == 1 ? "selected" : "")>Chưa thanh toán</option>
+                                    <option value="2" @(Model.CustomerOrderHistory?.PaymentStatus == 2 ? "selected" : "")>Đã thanh toán</option>
+                                </select>
+                            </div>
+                        `,
+                        focusConfirm: false,
+                        preConfirm: () => {
+                            if (!$('#actualCost').val()) {
+                                Swal.showValidationMessage('Vui lòng nhập tổng tiền!');
+                                return;
+                            }
+                            return {
+                                actualCost: $('#actualCost').val(),
+                                paymentMethod: $('#paymentMethod').val(),
+                                paymentStatus: $('#paymentStatus').val()
+                            };
+                        }
+                    });
+
+                    if (!formValues) return;
+
+                    let { success, message } = await $.callAjax(`${url}?handler=${path}&requestId=${id}`, 'POST', formValues);
+                    if (!success) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: message
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thành công',
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    }
+                    return;
+                }
+
+
+                let message = "",
+                    rejectReason = "";
+
+                if (status == @((int)ConstructionRequestsStatus.Rejected)) {
+                    message = "Từ chối yêu cầu";
+                    let { value: reason } = await Swal.fire({
+                        title: 'Nhập lý do từ chối',
+                        input: 'text',
+                        inputPlaceholder: 'Lý do từ chối',
+                        showCancelButton: true,
+                        inputValidator: (value) => {
+                            if (!value) {
+                                return 'Vui lòng nhập lý do từ chối!';
+                            }
+                        }
+                    });
+                    if (!reason) return;
+                    rejectReason = reason;
+                } else {
+                    message = optionStatus?.trim();
+                }
+
+                let cf = await Swal.fire({
+                    title: `Thay đổi trạng thái thành <${message}>`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Đồng ý',
+                    cancelButtonText: 'Hủy'
+                });
+
+                if (cf.isConfirmed) {
+                    let { success, message } = await $.callAjax(`${url}?handler=${path}&requestId=${id}`, 'POST', { status: status, rejectReason: rejectReason });
+                    if (!success) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: message
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thành công',
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    }
+                }
+            });
+        });
+    </script>
 }

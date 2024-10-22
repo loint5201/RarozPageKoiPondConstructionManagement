@@ -41,21 +41,21 @@ namespace KoiPondConstructionManagement.Pages.Manager.Admin.Service
                 }
 
 
-                if ((constructionRequest.Status != (int)ConstructionRequestsStatus.Pending &&
-                    constructionRequest.Status == (int)ConstructionRequestsStatus.Cancelled)
-                    && request.Status == (int)ConstructionRequestsStatus.Approved)
-                {
-                    serviceResponse.OnError("Không thể chấp nhận yêu cầu này");
-                    return new JsonResult(serviceResponse);
-                }
+                //if ((constructionRequest.Status != (int)ConstructionRequestsStatus.Pending &&
+                //    constructionRequest.Status == (int)ConstructionRequestsStatus.Cancelled)
+                //    && request.Status == (int)ConstructionRequestsStatus.Approved)
+                //{
+                //    serviceResponse.OnError("Không thể chấp nhận yêu cầu này");
+                //    return new JsonResult(serviceResponse);
+                //}
 
-                if ((constructionRequest.Status == (int)ConstructionRequestsStatus.Completed ||
-                    constructionRequest.Status == (int)ConstructionRequestsStatus.Cancelled)
-                    && request.Status == (int)ConstructionRequestsStatus.Cancelled)
-                {
-                    serviceResponse.OnError("Không thể thay đổi trạng thái yêu cầu này");
-                    return new JsonResult(serviceResponse);
-                }
+                //if ((constructionRequest.Status == (int)ConstructionRequestsStatus.Completed ||
+                //    constructionRequest.Status == (int)ConstructionRequestsStatus.Cancelled)
+                //    && request.Status == (int)ConstructionRequestsStatus.Cancelled)
+                //{
+                //    serviceResponse.OnError("Không thể thay đổi trạng thái yêu cầu này");
+                //    return new JsonResult(serviceResponse);
+                //}
 
                 constructionRequest.Status = request.Status;
                 constructionRequest.RejectReason = request.RejectReason;

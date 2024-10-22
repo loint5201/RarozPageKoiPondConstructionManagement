@@ -1,0 +1,23 @@
+﻿@using Domain.Entities
+@using Domain.Enums
+@model int
+@{
+    string status = "";
+    string color = "";
+    switch (Model)
+    {
+        case (int)ConstructionProcessStatus.Pending:
+            status = "Chờ xử lý";
+            color = "badge-warning";
+            break;
+        case (int)ConstructionProcessStatus.InProgress:
+            status = "Đang thi công";
+            color = "badge-primary";
+            break;
+        case (int)ConstructionProcessStatus.Completed:
+            status = "Đã hoàn thành";
+            color = "badge-success";
+            break;
+    }
+}
+<span class="badge badge-pill @color">@status</span>

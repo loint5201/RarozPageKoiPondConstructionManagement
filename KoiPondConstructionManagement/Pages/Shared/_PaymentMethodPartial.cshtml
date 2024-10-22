@@ -1,0 +1,16 @@
+﻿@using Domain.Entities
+@using Domain.Enums
+@model int
+@{
+    string method = "";
+    switch (Model)
+    {
+        case (int)PaymentMethod.Cash:
+            method = "Tiền mặt";
+            break;
+        case (int)PaymentMethod.BankTransfer:
+            method = "Chuyển khoản";
+            break;
+    }
+}
+<span class="badge badge-pill badge-primary">@method</span>

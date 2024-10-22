@@ -38,7 +38,7 @@
                             <td class="text-left">@request.Customer?.FullName</td>
                             <td class="text-left">@request.Customer?.PhoneNumber</td>
                             <td class="text-left">@request.Customer?.Address</td>
-                            <td class="text-center">@await Html.PartialAsync("_ConstructionRequestsStatusPartial", @request)</td>
+                            <td class="text-center">@await Html.PartialAsync("_ConstructionRequestsStatusPartial", @request.Status)</td>
                             <td class="text-center">
                                 @if (request.Status == (int)ConstructionRequestsStatus.Pending)
                                 {
