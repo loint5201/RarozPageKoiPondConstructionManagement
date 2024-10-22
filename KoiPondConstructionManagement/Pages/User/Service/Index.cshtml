@@ -74,7 +74,7 @@
                                                 <td class="text-left">@Model.ConstructionRequests[i].MaintenanceService?.ServiceName</td>
                                                 <td class="text-center">@Model.ConstructionRequests[i].CreatedAt.ToString("dd/MM/yyyy")</td>
                                                 <td class="text-right">@Model.ConstructionRequests[i].CostEstimate?.ToString("C", new System.Globalization.CultureInfo("vi-VN"))</td>
-                                                <td class="text-center">@await Html.PartialAsync("_ConstructionRequestsStatusPartial", Model.ConstructionRequests[i])</td>
+                                                <td class="text-center">@await Html.PartialAsync("_ConstructionRequestsStatusPartial", Model.ConstructionRequests[i].Status)</td>
                                                 <td class="text-center">
                                                     <a asp-page="/User/Service/Detail" asp-route-id="@Model.ConstructionRequests[i].RequestId" class="btn btn-primary">Xem chi tiết</a>
                                                     @if (Model.ConstructionRequests[i].Status == (int)ConstructionRequestsStatus.Pending)

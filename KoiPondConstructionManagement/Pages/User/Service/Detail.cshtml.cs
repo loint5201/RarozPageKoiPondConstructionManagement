@@ -15,6 +15,11 @@ namespace KoiPondConstructionManagement.Pages.User.Service
         public ConstructionRequest? ConstructionRequest { get; set; }
 
         public List<Domain.Entities.MaintenanceService>? MaintenanceServices { get; set; }
+
+        public List<ConstructionProcess> LstConstructionProcess;
+
+        public CustomerOrderHistory? CustomerOrderHistory;
+        public Feedback? Feedback;
         public DetailModel(KoiPondConstructionManagementContext context)
         {
             _context = context;
@@ -35,6 +40,20 @@ namespace KoiPondConstructionManagement.Pages.User.Service
                 .Include(x => x.MaintenanceService)
                 .Include(x => x.Design)
                 .FirstOrDefaultAsync(x => x.RequestId == id && x.CustomerId == User.GetUserId());
+
+            if (ConstructionRequest != null)
+            {
+                LstConstructionProcess = await _context.ConstructionProcesses
+                                            .Include(x => x.AssignedStaff)
+                                            .Where(x => x.RequestId == ConstructionRequest.RequestId)
+                                            .ToListAsync();
+
+                CustomerOrderHistory = await _context.CustomerOrderHistories
+                    .FirstOrDefaultAsync(x => x.RequestId == ConstructionRequest.RequestId);
+
+                Feedback = await _context.Feedbacks
+                    .FirstOrDefaultAsync(x => x.RequestId == ConstructionRequest.RequestId);
+            }
         }
 
         /// <summary>
@@ -45,7 +64,7 @@ namespace KoiPondConstructionManagement.Pages.User.Service
         public async Task<IActionResult> OnPutUpdateService(ConstructionRequestDTO request, int id)
         {
             ServiceResponse response = new();
-            var constructionRequests = await _context.ConstructionRequests.FirstOrDefaultAsync(x => x.RequestId == id);
+            var constructionRequests = await _context.ConstructionRequests.FirstOrDefaultAsync(x => x.RequestId == id && x.CustomerId == User.GetUserId());
             if (constructionRequests == null)
             {
                 response.OnError("Request not found.");
@@ -72,6 +91,45 @@ namespace KoiPondConstructionManagement.Pages.User.Service
             constructionRequests.UpdatedAt = DateTime.Now;
 
             await _context.SaveChangesAsync();
+            return new JsonResult(response);
+        }
+
+        public async Task<IActionResult> OnPostCreateFeedbackAsync(int requestId, Feedback feedbackDTO)
+        {
+            ServiceResponse response = new();
+            try
+            {
+                var constructionRequests = await _context.ConstructionRequests.FirstOrDefaultAsync(x => x.RequestId == requestId && x.CustomerId == User.GetUserId());
+                if (constructionRequests == null)
+                {
+                    response.OnError("Request not found.");
+                    return new JsonResult(response);
+                }
+
+                var feedback = await _context.Feedbacks.FirstOrDefaultAsync(x => x.RequestId == requestId);
+                if (feedback != null)
+                {
+                    response.OnError("Feedback already exists.");
+                    return new JsonResult(response);
+                }
+
+                feedback = new Feedback
+                {
+                    RequestId = requestId,
+                    CustomerId = constructionRequests.CustomerId,
+                    Rating = feedbackDTO.Rating,
+                    Comment = feedbackDTO.Comment,
+                    CreatedAt = DateTime.Now,
+                };
+
+                await _context.Feedbacks.AddAsync(feedback);
+                await _context.SaveChangesAsync();
+            }
+            catch (System.Exception ex)
+            {
+                response.OnError(ex.Message);
+            }
+
             return new JsonResult(response);
         }
     }

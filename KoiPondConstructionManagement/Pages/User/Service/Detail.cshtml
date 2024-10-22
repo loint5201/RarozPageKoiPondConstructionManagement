@@ -106,26 +106,104 @@
 
                     <!-- Form item - Approved -->
                     <div class="form-step">
-                        @* <div class="btns-group">
-                        <a href="#" class="btn btn-prev">Back</a>
-                        <a href="#" class="btn btn-next">Next</a>
-                        </div> *@
+                        <div class="row">
+                            <div class="col-md-12 text-center">
+                                <h4>Chúng tôi đã duyệt yêu cầu của bạn</h4>
+                                <p>Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất để bắt đầu thi công.</p>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Form item - InProgress -->
                     <div class="form-step">
-                        @*  <div class="btns-group">
-                        <a href="#" class="btn btn-prev">Back</a>
-                        <a href="#" class="btn btn-next">Next</a>
-                        </div> *@
+                        @if (Model.LstConstructionProcess != null && Model.LstConstructionProcess.Count > 0)
+                        {
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <h4>Quy trình thi công</h4>
+                                    <table class="table table-bordered" id="inProgressTable">
+                                        <thead>
+                                            <tr>
+                                                <th width="100px">Bước</th>
+                                                <th class="text-left">Thông tin</th>
+                                                <th width="250px" class="text-left">Giao việc cho</th>
+                                                <th class="text-center">Trạng thái</th>
+                                                <th class="text-left">Ghi chú</th>
+                                                <th class="text-center">Thời gian cập nhật</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Rows will be added dynamically here -->
+                                            @foreach (var process in Model.LstConstructionProcess)
+                                            {
+                                                <tr>
+                                                    <td class="text-right">@process.Step</td>
+                                                    <td class="text-left">@Html.Raw(process.StepInfo)</td>
+                                                    <td class="text-left">@Html.Raw(process.AssignedStaff?.FullName)</td>
+                                                    <td class="text-center">@await Html.PartialAsync("_ConstructionProcessStatusPartial", process.Status)</td>
+                                                    <td class="text-left">@Html.Raw(process.Note)</td>
+                                                    <td class="text-center">@process.UpdatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        }
                     </div>
 
                     <!-- Form item - Completed -->
                     <div class="form-step">
-                        @*                         <div class="btns-group">
-                        <a href="#" class="btn btn-prev">Back</a>
-                        <input type="submit" value="Register" class="btn" />
-                        </div> *@
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h4>Lịch sử đơn hàng</h4>
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-right">Mã đơn hàng</th>
+                                            <th class="text-right">Tổng tiền</th>
+                                            <th class="text-center">Phương thức thanh toán</th>
+                                            <th class="text-center">Trạng thái</th>
+                                            <th class="text-center">Đánh giá</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Rows will be added dynamically here -->
+                                        @if (Model.CustomerOrderHistory != null)
+                                        {
+                                            <tr>
+                                                <td class="text-right">@Model.CustomerOrderHistory.HistoryId</td>
+                                                <td class="text-right">@Model.CustomerOrderHistory.ActualCost.ToString("C", new System.Globalization.CultureInfo("vi-VN"))</td>
+                                                <td class="text-center">@await Html.PartialAsync("_PaymentMethodPartial", Model.CustomerOrderHistory.PaymentMethod)</td>
+                                                <td class="text-center">@await Html.PartialAsync("_PaymentStatusPartial", Model.CustomerOrderHistory.PaymentStatus)</td>
+                                                <td class="text-center">
+                                                @if (Model.CustomerOrderHistory.PaymentStatus == (int)PaymentStatus.Paid && Model.Feedback == null)
+                                                {
+                                                    <button 
+                                                        class="btn btn-primary btn-sm m-auto"
+                                                        btn-action="feedback"
+                                                        btn-url="@Url.Page("/User/Service/Detail")"
+                                                        btn-path="CreateFeedback&requestId=@Model.ConstructionRequest?.RequestId"
+                                                        btn-id="@Model.ConstructionRequest?.RequestId">
+                                                        Đánh giá
+                                                    </button>
+                                                }else{
+                                                    <button 
+                                                        class="btn btn-primary btn-sm m-auto"
+                                                        btn-action="viewFeedback"
+                                                        btn-url="@Url.Page("/User/Service/Detail")"
+                                                        btn-path="CreateFeedback&requestId=@Model.ConstructionRequest?.RequestId"
+                                                        btn-id="@Model.ConstructionRequest?.RequestId">
+                                                        Xem đánh giá
+                                                    </button>
+                                                }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <!-- Form Ends -->
@@ -135,6 +213,7 @@
 </div>
 
 @section Scripts {
+    <script src="~/js/ckeditor5/ckeditor.min.js"></script>
     <script>
         const prevBtns = document.querySelectorAll(".btn-prev");
         const nextBtns = document.querySelectorAll(".btn-next");
@@ -192,17 +271,22 @@
                 }
             })
             progress.style.width = ((formStepsNum) / (progressSteps.length - 1)) * 100 + "%";
-
         }
     </script>
-    <script src="~/js/ckeditor5/ckeditor.min.js"></script>
     <script>
         $(document).ready(function () {
-            ClassicEditor
-            .create(document.querySelector('#customDesignDescription'))
-            .catch(error => {
-                console.error(error);
-            });
+            $.mask();
+            if ($('#customDesignDescription').length > 0) {
+                ClassicEditor
+                    .create(document.querySelector('#customDesignDescription'))
+                    .catch(error => {
+                        console.error(error);
+                    });
+            }
+
+            if ($('#inProgressTable').length > 0) {
+                $('#inProgressTable').DataTable();
+            }
 
             let lastStatus = @(Model.ConstructionRequest?.Status - 1);
             if (lastStatus > 0) {
@@ -210,6 +294,7 @@
                 updateFormSteps();
                 updateProgressbar();
             }
+            $.unmask();
 
 
             var maintenanceServiceId = $('#maintenanceServiceId').data('value');
@@ -221,7 +306,7 @@
                     $('#costEstimate').val('Liên hệ');
                 } else {
                     costEstimate = parseFloat(costEstimate);
-                    $('#costEstimate').val(costEstimate.toLocaleString('vi-VN', {style: 'currency', currency: 'VND'}));
+                    $('#costEstimate').val(costEstimate.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }));
                 }
             });
 
@@ -264,6 +349,115 @@
                     }).then(() => {
                         window.location.reload();
                     });
+                }
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('a[btn-action], button[btn-action]').click(async function () {
+                var action = $(this).attr('btn-action');
+                var url = $(this).attr('btn-url');
+                var path = $(this).attr('btn-path');
+                var id = $(this).attr('btn-id');
+
+                if (!url || !path) return;
+                action = action.toLowerCase();
+
+                if (action == "feedback" || action == "viewfeedback") {
+                    let { value: formValues } = await Swal.fire({
+                        title: 'Đánh giá dịch vụ',
+                        html: `
+                            <div class="form-group text-left">
+                                <label for="rating">Rating:</label>
+                                <div id="rating" class="rating">
+                                    <input type="number" name="rating" hidden>
+                                    <i class="fa fa-star star" data-value="1" style="--i: 0;"></i>
+                                    <i class="fa fa-star star" data-value="2" style="--i: 1;"></i>
+                                    <i class="fa fa-star star" data-value="3" style="--i: 2;"></i>
+                                    <i class="fa fa-star star" data-value="4" style="--i: 3;"></i>
+                                    <i class="fa fa-star star" data-value="5" style="--i: 4;"></i>
+                                </div>
+                            </div>
+                            <div class="form-group text-left mt-3">
+                                <label for="comment">Bình luận:</label>
+                                <textarea id="comment" class="form-control" placeholder="Nhập bình luận..." rows="3"></textarea>
+                            </div>
+                        `,
+                        focusConfirm: false,
+                        showCancelButton: action == "feedback",
+                        confirmButtonText: action == "feedback" ? 'Gửi đánh giá' : 'Đóng',
+                        didOpen: async () => {
+                            await new Promise(resolve => setTimeout(resolve, 100));
+                            const allStar = $('.rating .star');
+                            const ratingValue = $('.rating input');
+
+                            if (action == "viewfeedback") {
+                                let rating = @Model.Feedback?.Rating,
+                                    comment = '@Html.Raw(Model.Feedback?.Comment)';
+                                    
+                                allStar.each(function (i) {
+                                    if (i < rating) {
+                                        $(allStar[i]).addClass('active');
+                                    }
+                                });
+                                
+                                ratingValue.val(rating);
+                                $('#comment').val(comment);
+                                $('#comment').attr('disabled', 'disabled');
+                                $('.rating .star').css('pointer-events', 'none');
+                                return;
+                            }
+
+                            allStar.each(function (idx) {
+                                $(this).on('click', function () {
+                                    let click = 0;
+                                    ratingValue.val(idx + 1);
+
+                                    allStar.each(function () {
+                                        $(this).removeClass('active');
+                                    });
+
+                                    allStar.each(function (i) {
+                                        if (i <= idx) {
+                                            $(allStar[i]).addClass('active');
+                                        } else {
+                                            $(allStar[i]).css('--i', click);
+                                            click++;
+                                        }
+                                    });
+                                });
+                            });
+                        },
+                        preConfirm: () => {
+                            const rating = $('#rating input').val();
+                            const comment = $('#comment').val();
+                            
+                            if (!rating) {
+                                Swal.showValidationMessage('Vui lòng chọn số sao để đánh giá');
+                            }
+                            
+                            return { rating, comment };
+                        },
+                    });
+
+                    if (!formValues || action == "viewfeedback") return;
+
+                    let { success, message } = await $.callAjax(`${url}?handler=${path}`, 'POST', formValues);
+                    if (!success) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: message
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thành công',
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    }
                 }
             });
         });

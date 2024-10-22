@@ -44,6 +44,20 @@
             }
         });
 
+        let loaderHtml = `<div id="loader" class="loader-wrapper">
+                            <div class="loader"></div>
+                        </div>`;
+        
+        $('body').append(loaderHtml);
+        
+        $.mask = () => {
+            $('body').append(loaderHtml);
+        }
+        
+        $.unmask = () => {
+            $('#loader').remove();
+        }
+
         // nếu có thuộc tính is-development="true" thì sẽ hiển thị thông báo sử dụng sweetalert2
         $(document).on('click', '[is-development="true"]', function () {
             event.preventDefault();
@@ -55,4 +69,12 @@
             });
         });
     });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        $('#loader').fadeOut(); // Ẩn loader khi DOM đã sẵn sàng
+    });
+
+    window.onerror = function(message, source, lineno, colno, error) {
+        $('#loader').fadeOut(); // Ẩn loader trong trường hợp có lỗi
+    };
 })(jQuery);

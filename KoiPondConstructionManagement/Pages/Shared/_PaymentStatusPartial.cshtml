@@ -1,0 +1,19 @@
+﻿@using Domain.Entities
+@using Domain.Enums
+@model int
+@{
+    string status = "";
+    string color = "";
+    switch (Model)
+    {
+        case (int)PaymentStatus.Unpaid:
+            status = "Chưa thanh toán";
+            color = "badge-warning";
+            break;
+        case (int)PaymentStatus.Paid:
+            status = "Đã thanh toán";
+            color = "badge-success";
+            break;
+    }
+}
+<span class="badge badge-pill @color">@status</span>
