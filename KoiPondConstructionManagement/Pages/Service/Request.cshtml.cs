@@ -57,7 +57,7 @@ namespace KoiPondConstructionManagement.Pages.Service
                 await _context.ConstructionRequests.AddAsync(request);
                 await _context.SaveChangesAsync();
 
-                return RedirectToPage("/User/MyService");
+                return RedirectToPage("/User/Service/Index");
             }
 
             return Page();

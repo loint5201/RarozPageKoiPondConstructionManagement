@@ -393,7 +393,7 @@
                             const ratingValue = $('.rating input');
 
                             if (action == "viewfeedback") {
-                                let rating = @Model.Feedback?.Rating,
+                                let rating = @(Model.Feedback?.Rating ?? 0),
                                     comment = '@Html.Raw(Model.Feedback?.Comment)';
                                     
                                 allStar.each(function (i) {

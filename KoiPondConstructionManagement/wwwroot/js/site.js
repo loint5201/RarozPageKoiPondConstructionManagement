@@ -61,6 +61,8 @@
         // nếu có thuộc tính is-development="true" thì sẽ hiển thị thông báo sử dụng sweetalert2
         $(document).on('click', '[is-development="true"]', function () {
             event.preventDefault();
+            event.stopPropagation(); // ngăn chặn sự kiện click lan ra các thẻ cha
+            event.stopImmediatePropagation(); // ngăn chặn sự kiện click lan ra các thẻ cha
             Swal.fire({
                 title: 'Chức năng đang được phát triển',
                 text: 'Chức năng này đang được phát triển, vui lòng quay lại sau',
