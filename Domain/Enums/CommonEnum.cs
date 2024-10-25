@@ -9,12 +9,8 @@
     /// </summary>
     public enum DesignStatus
     {
-        Pending = 1,
-        Approved = 2,
-        InProgress = 3,
-        Completed = 4,
-        Rejected = 5,
-        Showroom = 6
+        Show = 1, // Hiển thị
+        Hide = 2, // Ẩn
     }
 
     /// <summary>
@@ -53,6 +49,7 @@
     /// </summary>
     public enum ConstructionProcessStatus
     {
+        All = -1, // Tất cả
         Pending = 0, // Chờ xử lý
         InProgress = 1, // Đang thi công
         Completed = 2, // Đã hoàn thành

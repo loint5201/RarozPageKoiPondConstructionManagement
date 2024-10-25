@@ -24,9 +24,13 @@ namespace Application.Common.Mappings
             CreateMap<UserResponse, User>()
                .ReverseMap();
 
+            CreateMap<KoiDesignRequest, KoiDesign>()
+               .ReverseMap();
+
             CreateMap<MaintenanceServiceDTO, MaintenanceService>()
                 .ForMember(dest => dest.ServiceImage, opt => opt.Ignore())
                 .ReverseMap();
+
         }
     }
 }
