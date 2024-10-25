@@ -1,16 +1,11 @@
 ﻿@page
-@model KoiPondConstructionManagement.Pages.Manager.Design.IndexModel
+@model KoiPondConstructionManagement.Pages.Manager.Construction.ListModel
 @{
 }
 
 <style>
     .construction-list {
         max-height: calc(100% - 100px)
-    }
-
-    textarea[name="note"],
-    .ck-editor__editable {
-        min-height: 300px; /* Điều chỉnh chiều cao ở đây */
     }
 </style>
 
@@ -34,7 +29,7 @@
     <div class="row construction-items">
         @foreach (var item in Model.ConstructionGroups)
         {
-            <div class="col-md-12 mb-3">
+            <div class="col-md-6 mb-3">
                 <div class="card">
                     <div class="card-header">
                         <h5 class="card-title text-center">
@@ -84,7 +79,7 @@
                                     <div class="card-body">
                                         <p class="card-text mb-1">
                                             <span class="font-weight-bold">
-                                                Trạng thái:
+                                                Trạng thái: 
                                                 <select class="form-control" name="status" asp-for="@detail.Status">
                                                     <option value="0">Chờ xử lý</option>
                                                     <option value="1">Đang thực hiện</option>
@@ -95,7 +90,7 @@
                                         <p class="card-text mb-1">
                                             <span class="font-weight-bold">
                                                 Ghi chú:
-                                                <textarea name="note" class="form-control">@Html.Raw(detail.Note)</textarea>
+                                                <textarea name="note" class="form-control" rows="5">@Html.Raw(detail.Note)</textarea>
                                             </span>
                                         </p>
                                     </div>
@@ -103,7 +98,7 @@
                             }
                             @if (item.Key.Status != (int)ConstructionRequestsStatus.Completed)
                             {
-                                <button type="submit" class="btn btn-primary">Cập nhật</button>
+                                <button type="submit" class="btn btn-primary">Cập nhật</button>   
                             }
                         </form>
                     </div>
@@ -114,7 +109,6 @@
 </div>
 
 @section Scripts {
-    <script src="~/js/ckeditor5/ckeditor.min.js"></script>
     <script>
         $(document).ready(function () {
             var top = $('.construction-items').offset().top;
@@ -123,57 +117,16 @@
             $('.construction-items').css('height', height);
             $('.construction-items').css('overflow', 'auto');
 
-            $('textarea[name="note"]').click(async function () {
-                // Khởi tạo ClassicEditor cho trường này
-                if (!$(this).data('ckeditor-initialized')) {
-                    const editor = await ClassicEditor.create(this, {
-                        // toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'undo', 'redo', 'imageUpload'],
-                        toolbar: ['FontFamily', 'Heading', 'Paragraph', '|', 'bold', 'italic', 'Underline', 'FontColor', 'FontSize', 'Highlight', '|', 'numberedList', 'bulletedList', 'List', 'outdent', 'indent', '|', 'alignment:left', 'alignment:right', 'alignment:center', 'alignment:justify', '|', 'Link', 'ImageUpload', '|', 'undo', 'redo', 'PasteFromOffice', 'Autoformat', 'Essentials', 'TextTransformation'],
-                        heading: {
-                            options: [
-                                { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
-                                { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
-                                { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' }
-                            ]
-                        },
-                        image: {
-                            toolbar: ['imageTextAlternative', '|', 'imageStyle:alignLeft', 'imageStyle:full', 'imageStyle:alignRight'],
-                            styles: ['full', 'alignLeft', 'alignRight']
-                        },
-                        ckfinder: {
-                            uploadUrl: '/Manager/Admin/Service/RequestDetail?handler=UploadFile',
-                            customXHR: (xhr) => {
-                                xhr.setRequestHeader('RequestVerificationToken', getToken());
-                            }
-                        },
-                        fontSize: {
-                            options: [9, 11, 13, 'default', 17, 19, 21, 23, 25, 27]
-                        },
-                        indentBlock: {
-                            offset: 1,
-                            unit: 'em'
-                        },
-                    });
-
-                    editor.setData(this.value);
-                    editor.model.document.on('change:data', () => {
-                        this.value = editor.getData();
-                    });
-                    // Đánh dấu rằng CKEditor đã được khởi tạo
-                    $(this).data('ckeditor-initialized', true);
-                }
-            });
-
             $('.frmDetail').submit(async function (e) {
                 e.preventDefault();
-
+    
                 const constructionProcesses = [];
-
+    
                 // Lấy form cha hiện tại
                 const form = $(this);
-
+    
                 // Duyệt qua từng nhóm trường dữ liệu trong form cha
-                form.find("input[name='processId']").each(function (index) {
+                form.find("input[name='processId']").each(function(index) {
                     const processId = $(this).val();
                     const status = form.find("select[name='status']").eq(index).val();
                     const note = form.find("textarea[name='note']").eq(index).val();
@@ -186,7 +139,7 @@
                     });
                 });
 
-                let url = '/Manager/Design/Index'
+                let url = '/Manager/Construction/List'
                 let path = 'UpdateProcessStatus'
 
                 // Gửi dữ liệu lên server

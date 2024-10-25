@@ -1,0 +1,89 @@
+﻿@page
+@model KoiPondConstructionManagement.Pages.Manager.Design.DetailModel
+@{
+    ViewData["Title"] = "Koi Design Detail";
+}
+<style>
+    .ck-editor__editable {
+        min-height: 300px; /* Điều chỉnh chiều cao ở đây */
+    }
+</style>
+<h2>Chi tiết thiết kế</h2>
+
+<form method="post" enctype="multipart/form-data">
+    <input asp-for="KoiDesignRequest.DesignId" hidden class="form-control" readonly />
+
+    <div class="form-group">
+        <label asp-for="KoiDesignRequest.DesignName">Tên thiết kế</label>
+        <input asp-for="KoiDesignRequest.DesignName" class="form-control" />
+        <span asp-validation-for="KoiDesignRequest.DesignName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="KoiDesignRequest.DesignImage">Hình ảnh</label>
+        <input type="file" asp-for="KoiDesignRequest.Avatar" class="form-control" />
+        <img src="~/uploads/@Model.KoiDesignRequest.DesignImage" alt="Design Image" style="max-height: 150px; margin-top: 10px;" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="KoiDesignRequest.Description">Mô tả</label>
+        <textarea asp-for="KoiDesignRequest.Description" id="description" class="form-control"></textarea>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="KoiDesignRequest.CostEstimate">Khoảng giá</label>
+        <input asp-for="KoiDesignRequest.CostEstimate" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="KoiDesignRequest.Status">Trạng thái</label>
+        <select asp-for="KoiDesignRequest.Status" class="form-control">
+            <option value="0">Ẩn</option>
+            <option value="1">Hiển thị</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Lưu</button>
+    <a asp-page="/Manager/Design/List" class="btn btn-secondary">Quay lại</a>
+</form>
+
+@section Scripts {
+    <script src="~/js/ckeditor5/ckeditor.min.js"></script>
+    <script>
+        $(document).ready(async function () {
+            const editor = await ClassicEditor.create(document.querySelector('#description'), {
+                // toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'undo', 'redo', 'imageUpload'],
+                toolbar: ['FontFamily', 'Heading', 'Paragraph', '|', 'bold', 'italic', 'Underline', 'FontColor', 'FontSize', 'Highlight', '|', 'numberedList', 'bulletedList', 'List', 'outdent', 'indent', '|', 'alignment:left', 'alignment:right', 'alignment:center', 'alignment:justify', '|', 'Link', 'ImageUpload', '|', 'undo', 'redo', 'PasteFromOffice', 'Autoformat', 'Essentials', 'TextTransformation'],
+                heading: {
+                    options: [
+                        { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+                        { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+                        { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' }
+                    ]
+                },
+                image: {
+                    toolbar: ['imageTextAlternative', '|', 'imageStyle:alignLeft', 'imageStyle:full', 'imageStyle:alignRight'],
+                    styles: ['full', 'alignLeft', 'alignRight']
+                },
+                ckfinder: {
+                    uploadUrl: '/Manager/Admin/Service/RequestDetail?handler=UploadFile',
+                    customXHR: (xhr) => {
+                        xhr.setRequestHeader('RequestVerificationToken', getToken());
+                    }
+                },
+                fontSize: {
+                    options: [9, 11, 13, 'default', 17, 19, 21, 23, 25, 27]
+                },
+                indentBlock: {
+                    offset: 1,
+                    unit: 'em'
+                },
+            });
+
+            editor.setData(this.value);
+            editor.model.document.on('change:data', () => {
+                this.value = editor.getData();
+            });
+        });
+    </script>
+}

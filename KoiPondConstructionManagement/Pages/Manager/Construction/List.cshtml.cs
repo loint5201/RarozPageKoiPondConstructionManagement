@@ -7,12 +7,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
-namespace KoiPondConstructionManagement.Pages.Manager.Design
+namespace KoiPondConstructionManagement.Pages.Manager.Construction
 {
-    public class IndexModel : PageModel
+    public class ListModel : PageModel
     {
         private KoiPondConstructionManagementContext _context;
-        public IndexModel(KoiPondConstructionManagementContext context)
+        public ListModel(KoiPondConstructionManagementContext context)
         {
             _context = context;
         }
@@ -60,7 +60,7 @@ namespace KoiPondConstructionManagement.Pages.Manager.Design
                 var processIds = processes.Select(p => p.ProcessId).ToList();
                 var exists = await _context.ConstructionProcesses
                     .Where(x => processIds.Contains(x.ProcessId) && x.AssignedStaffId == User.GetUserId())
-                .ToListAsync();
+                    .ToListAsync();
 
                 bool hasChange = false;
                 if (exists.Count > 0)
