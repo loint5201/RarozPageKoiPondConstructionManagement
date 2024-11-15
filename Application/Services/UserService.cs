@@ -47,8 +47,8 @@ namespace Application.Services
         /// <returns></returns>
         public async Task<(bool Success, string? ErrorMessage)> RegisterAsync(RegisterRequest request)
         {
-            if (await _userRepository.AnyAsync(u => u.Email == request.Email))
-                return (false, "Email is already in use.");
+            if (await _userRepository.AnyAsync(u => u.Email == request.Email || u.PhoneNumber == request.PhoneNumber))
+                return (false, "Email hoặc số điện thoại đã tồn tại, vui lòng thử lại");
 
             var user = new User
             {

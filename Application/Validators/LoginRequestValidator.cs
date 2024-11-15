@@ -34,7 +34,8 @@ namespace Application.Validators
                 .MinimumLength(6).WithMessage("Mật khẩu phải có ít nhất 6 ký tự.");
 
             RuleFor(x => x.PhoneNumber)
-                .NotEmpty().WithMessage("Số điện thoại không được để trống.");
+                .NotEmpty().WithMessage("Số điện thoại không được để trống.")
+                .Matches(@"^0\d{9,10}$").WithMessage("Số điện thoại không hợp lệ");
 
             RuleFor(x => x.Address)
                 .NotEmpty().WithMessage("Địa chỉ không được để trống.");
