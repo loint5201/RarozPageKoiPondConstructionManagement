@@ -1,4 +1,65 @@
 ﻿@page
+@using Domain.Enums
 @model KoiPondConstructionManagement.Pages.Manager.Consulting.IndexModel
 @{
+}
+<link href="~/admin/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+<!-- Page Heading -->
+<h1 class="h3 mb-2 text-gray-800">Dịch vụ yêu cầu</h1>
+<p class="mb-4">
+    Các dịch vụ khách hàng yêu cầu
+</p>
+
+<!-- DataTales Example -->
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th class="text-right">Số yêu cầu</th>
+                        <th class="text-center">Ngày yêu cầu</th>
+                        <th class="text-center">Tên dịch vụ</th>
+                        <th class="text-right">Giá thi công dự kiến</th>
+                        <th class="text-left">Khách hàng</th>
+                        <th class="text-left">Số điện thoại</th>
+                        <th class="text-left">Địa chỉ</th>
+                        <th class="text-center">Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var request in Model.ConstructionRequests)
+                    {
+                        <tr>
+                            <td class="text-right">@request.RequestId</td>
+                            <td class="text-right">@request.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="text-center">@request.MaintenanceService?.ServiceName</td>
+                            <th class="text-right">@request.CostEstimate?.ToString("C", new System.Globalization.CultureInfo("vi-VN"))</th>
+                            <td class="text-left">@request.Customer?.FullName</td>
+                            <td class="text-left">@request.Customer?.PhoneNumber</td>
+                            <td class="text-left">@request.Customer?.Address</td>
+                            <td class="text-center">@await Html.PartialAsync("_ConstructionRequestsStatusPartial", @request.Status)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Page level plugins -->
+    <script src="~/admin/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/admin/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+
+    <!-- Page level custom scripts -->
+    @* <script src="~/admin/js/demo/datatables-demo.js"></script> *@
+    <script>
+        $(document).ready(function () {
+            $('#dataTable').DataTable({
+                 ordering: false // Tắt sắp xếp mặc định
+            });
+        });
+    </script>
 }

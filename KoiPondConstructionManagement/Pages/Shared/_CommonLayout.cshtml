@@ -58,9 +58,13 @@
                                 <ul class="login-register">
                                     @if (!User.Identity.IsAuthenticated)
                                     {
-                                        <li><a asp-page="/LoginRegister">Đăng nhập</a></li>
+                                        <li>
+                                            <a asp-page="/LoginRegister" asp-route-action="login">Đăng nhập</a>
+                                        </li>
                                         <li class="separator">/</li>
-                                        <li><a asp-page="/LoginRegister">Đăng ký</a></li>
+                                        <li>
+                                            <a asp-page="/LoginRegister" asp-route-action="register">Đăng ký</a>
+                                        </li>
                                     }
                                     else
                                     {
@@ -97,9 +101,6 @@
                                         <li><a href="/Logout">Đăng xuất</a></li>
                                     }
                                 </ul>
-                                @* <div class="heaher__top__btn">
-                                <a href="#">Buy Now</a>
-                                </div> *@
                             </div>
                         </div>
                     </div>
@@ -125,39 +126,6 @@
                                     </li>
                                     <li><a asp-page="/About">Giới thiệu</a></li>
                                     <li><a asp-page="/Service/Index">Dịch vụ</a></li>
-                                    <li class="drop">
-                                        <a asp-page="/Project/Index">Dự án</a>
-                                        @* <ul class="dropdown">
-                                        <li><a asp-page="/ProjectsOne">Projects One</a></li>
-                                        <li><a asp-page="/ProjectsTwo">Projects Two</a></li>
-                                        <li><a asp-page="/ProjectsThree">Projects Three</a></li>
-                                        </ul> *@
-                                    </li>
-                                    @* <li class="drop">
-                                    <a href="#">pages</a>
-                                    <ul class="dropdown">
-                                    <li><a asp-page="/Service">Service</a></li>
-                                    <li><a asp-page="/SingleService">Single Service</a></li>
-                                    <li><a asp-page="/ProjectsOne">Projects One</a></li>
-                                    <li><a asp-page="/ProjectsTwo">Projects Two</a></li>
-                                    <li><a asp-page="/ProjectsThree">Projects Three</a></li>
-                                    <li><a asp-page="/SingleProject">Single Project</a></li>
-                                    <li><a asp-page="/Blog">Blog</a></li>
-                                    <li><a asp-page="/BlogOneColumn">Blog One Column</a></li>
-                                    <li><a asp-page="/BlogTwoColumn">Blog Two Column</a></li>
-                                    <li><a asp-page="/BlogDetails">Blog Details</a></li>
-                                    <li><a asp-page="/LoginRegister">Log in & Register</a></li>
-                                    </ul>
-                                    </li> *@
-                                    @* <li class="drop"> *@
-                                    @* <a asp-page="/Blog/Index">BLOG</a> *@
-                                    @* <ul class="dropdown">
-                                    <li><a asp-page="/Blog">Blog</a></li>
-                                    <li><a asp-page="/BlogOneColumn">Blog One Column</a></li>
-                                    <li><a asp-page="/BlogTwoColumn">Blog Two Column</a></li>
-                                    </ul> *@
-                                    @* </li> *@
-                                    @* <li><a asp-page="/Contact">Liên hệ</a></li> *@
                                     @if (User.IsCustomer())
                                     {
                                         <li class="drop">
@@ -165,7 +133,6 @@
                                             <ul class="dropdown">
                                                 <li><a asp-page="/Service/Request">Đặt dịch vụ</a></li>
                                                 <li><a asp-page="/User/Service/Index">Quản lý dịch vụ</a></li>
-                                                <li><a asp-page="/ProjectsThree" is-development="true">Lịch Sử Dịch Vụ</a></li>
                                             </ul>
                                         </li>
                                     }
@@ -179,49 +146,11 @@
                                         </li>
                                         <li><a asp-page="/About">Giới thiệu</a></li>
                                         <li><a asp-page="/Service">Dịch vụ</a></li>
-                                        <li>
-                                            <a asp-page="/Project/Index">Dự án</a>
-                                            @* <ul>
-                                            <li><a asp-page="/ProjectsOne">Projects One</a></li>
-                                            <li><a asp-page="/ProjectsTwo">Projects Two</a></li>
-                                            <li><a asp-page="/ProjectsThree">Projects Three</a></li>
-                                            </ul> *@
-                                        </li>
-                                        @*  <li>
-                                        <a href="#">PAGES</a>
-                                        <ul>
-                                        <li><a asp-page="/Service">Service</a></li>
-                                        <li><a asp-page="/SingleService">Single Service</a></li>
-                                        <li><a asp-page="/ProjectsOne">Projects One</a></li>
-                                        <li><a asp-page="/ProjectsTwo">Projects Two</a></li>
-                                        <li><a asp-page="/ProjectsThree">Projects Three</a></li>
-                                        <li><a asp-page="/SingleProject">Single Project</a></li>
-                                        <li><a asp-page="/Blog">Blog</a></li>
-                                        <li><a asp-page="/BlogOneColumn">Blog One Column</a></li>
-                                        <li><a asp-page="/BlogTwoColumn">Blog Two Column</a></li>
-                                        <li><a asp-page="/BlogDetails">Blog Details</a></li>
-                                        <li><a asp-page="/LoginRegister">Log in & Register</a></li>
-                                        </ul>
-                                        </li> *@
-                                        <li>
-                                            <a asp-page="/Blog">BLOG</a>
-                                            <ul>
-                                                <li><a asp-page="/Blog">Blog</a></li>
-                                                <li><a asp-page="/BlogOneColumn">Blog One Column</a></li>
-                                                <li><a asp-page="/BlogTwoColumn">Blog Two Column</a></li>
-                                            </ul>
-                                        </li>
                                         <li><a asp-page="/Contact">Liên hệ</a></li>
                                     </ul>
                                 </nav>
                             </div>
                         </div>
-                        @* <div class="col-md-2 col-sm-6 hidden-xs">
-                        <div class="htc__header__search">
-                        <input type="text" placeholder="SEARCH">
-                        <a href="#"><i class="fa fa-search"></i></a>
-                        </div>
-                        </div> *@
                     </div>
                     <div class="mobile-menu-area"></div>
                 </div>

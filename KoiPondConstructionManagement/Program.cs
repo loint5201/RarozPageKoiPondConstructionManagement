@@ -12,7 +12,20 @@ namespace KoiPondConstructionManagement
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddRazorPages();
+            builder.Services.AddRazorPages()
+                 .AddMvcOptions(options =>
+                 {
+                     options.ModelBindingMessageProvider.SetValueIsInvalidAccessor(
+                         (x) => $"Giá trị '{x}' không hợp lệ.");
+                     options.ModelBindingMessageProvider.SetValueMustBeANumberAccessor(
+                         (x) => $"Trường {x} phải là một số.");
+                     options.ModelBindingMessageProvider.SetMissingBindRequiredValueAccessor(
+                         (x) => $"Trường {x} là bắt buộc.");
+                     options.ModelBindingMessageProvider.SetMissingKeyOrValueAccessor(
+                         () => "Giá trị này là bắt buộc.");
+                     options.ModelBindingMessageProvider.SetValueMustNotBeNullAccessor(
+                         (x) => $"Trường {x} không được để trống.");
+                 });
 
             JsonConvert.DefaultSettings = () =>
             {

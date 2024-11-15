@@ -2,12 +2,14 @@ using Application.Interfaces;
 using AutoMapper;
 using Domain.Entities;
 using Infrastructure.Data;
+using KoiPondConstructionManagement.Middleware;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 namespace KoiPondConstructionManagement.Pages.Manager.Design
 {
+    [AuthorizeRole(Domain.Enums.AppRoles.Design_Staff)]
     public class DetailModel : PageModel
     {
         private KoiPondConstructionManagementContext _context;

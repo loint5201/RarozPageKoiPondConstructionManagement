@@ -37,262 +37,274 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="htc__bst__construc">
-                <!-- Form Begins -->
-                <div class="form">
-                    <!-- Progress Bar  -->
-                    <div class="progressbar">
-                        <div class="progress" id="progress"></div>
-                        <div class="progress-step progress-step-active" data-title="Chờ xử lý"></div>
-                        <div class="progress-step" data-title="Đã duyệt"></div>
-                        <div class="progress-step" data-title="Đang thi công"></div>
-                        <div class="progress-step" data-title="Đã hoàn thành"></div>
-                    </div>
+                @if (Model.ConstructionRequest.Status != (int)ConstructionRequestsStatus.Cancelled && Model.ConstructionRequest.Status != (int)ConstructionRequestsStatus.Rejected)
+                {
+                    <!-- Form Begins -->
+                    <div class="form">
+                        <!-- Progress Bar  -->
+                        <div class="progressbar">
+                            <div class="progress" id="progress"></div>
+                            <div class="progress-step progress-step-active" data-title="Chờ xử lý"></div>
+                            <div class="progress-step" data-title="Đã duyệt"></div>
+                            <div class="progress-step" data-title="Đang thi công"></div>
+                            <div class="progress-step" data-title="Đã hoàn thành"></div>
+                        </div>
 
-                    <!-- Form item - Pending -->
-                    <div class="form-step form-step-active">
-                        <form method="put" name="detail-service" data-url="@Url.Page("/User/Service/Detail")" data-handler="UpdateService">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="maintenanceServiceId">Dịch vụ</label>
-                                        <select class="form-control"
-                                                id="maintenanceServiceId"
-                                                name="maintenanceServiceId"
-                                                required
-                                                data-value="@Model.ConstructionRequest?.MaintenanceServiceId"
-                                                disabled="@(Model.ConstructionRequest?.Status != (int)ConstructionRequestsStatus.Pending)">
-                                            @foreach (var service in Model.MaintenanceServices)
-                                            {
-                                                <option value="@service.ServiceId" data-expected-price="@service.Price">
-                                                    @service.ServiceName
-                                                </option>
-                                            }
-                                        </select>
+                        <!-- Form item - Pending -->
+                        <div class="form-step form-step-active">
+                            <form method="put" name="detail-service" data-url="@Url.Page("/User/Service/Detail")" data-handler="UpdateService">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="maintenanceServiceId">Dịch vụ</label>
+                                            <select class="form-control"
+                                                    id="maintenanceServiceId"
+                                                    name="maintenanceServiceId"
+                                                    required
+                                                    data-value="@Model.ConstructionRequest?.MaintenanceServiceId"
+                                                    disabled="@(Model.ConstructionRequest?.Status != (int)ConstructionRequestsStatus.Pending)">
+                                                @foreach (var service in Model.MaintenanceServices)
+                                                {
+                                                    <option value="@service.ServiceId" data-expected-price="@service.Price">
+                                                        @service.ServiceName
+                                                    </option>
+                                                }
+                                            </select>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="costEstimate">Mức giá dự kiến</label>
-                                        <input type="text" class="form-control" id="costEstimate" name="costEstimate" value="@Model.ConstructionRequest?.CostEstimate?.ToString("C", new System.Globalization.CultureInfo("vi-VN"))" disabled>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="costEstimate">Mức giá dự kiến</label>
+                                            <input type="text" class="form-control" id="costEstimate" name="costEstimate" value="@Model.ConstructionRequest?.CostEstimate?.ToString("C", new System.Globalization.CultureInfo("vi-VN"))" disabled>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="customDesignDescription">Mô tả</label>
-                                        @if (Model.ConstructionRequest?.Status != (int)ConstructionRequestsStatus.Pending)
-                                        {
-                                            @Html.Raw(@Model.ConstructionRequest?.CustomDesignDescription)
-                                        }
-                                        else
-                                        {
-                                            <textarea class="form-control" id="customDesignDescription"
-                                                      name="customDesignDescription" rows="3">@Model.ConstructionRequest?.CustomDesignDescription</textarea>
-                                        }
-                                    </div>
-                                </div>
-                                @* <a href="#" class="btn btn-next width-50 ml-auto">Next</a> *@
-
-                                @if (Model.ConstructionRequest?.Status == (int)ConstructionRequestsStatus.Pending)
-                                {
                                     <div class="col-md-12">
-                                        <button type="submit" class="htc__btn">Sửa lại yêu cầu</button>
+                                        <div class="form-group">
+                                            <label for="customDesignDescription">Mô tả</label>
+                                            @if (Model.ConstructionRequest?.Status != (int)ConstructionRequestsStatus.Pending)
+                                            {
+                                                @Html.Raw(@Model.ConstructionRequest?.CustomDesignDescription)
+                                            }
+                                            else
+                                            {
+                                                <textarea class="form-control" id="customDesignDescription"
+                                                          name="customDesignDescription" rows="3">@Model.ConstructionRequest?.CustomDesignDescription</textarea>
+                                            }
+                                        </div>
                                     </div>
-                                }
-                            </div>
-                        </form>
-                    </div>
+                                    @* <a href="#" class="btn btn-next width-50 ml-auto">Next</a> *@
 
-                    <!-- Form item - Approved -->
-                    <div class="form-step">
-                        <div class="row">
-                            <div class="col-md-12 text-center">
-                                <h4>Chúng tôi đã duyệt yêu cầu của bạn</h4>
-                                <p>Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất để bắt đầu thi công.</p>
+                                    @if (Model.ConstructionRequest?.Status == (int)ConstructionRequestsStatus.Pending)
+                                    {
+                                        <div class="col-md-12">
+                                            <button type="submit" class="htc__btn">Sửa lại yêu cầu</button>
+                                        </div>
+                                    }
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Form item - Approved -->
+                        <div class="form-step">
+                            <div class="row">
+                                <div class="col-md-12 text-center">
+                                    <h4>Chúng tôi đã duyệt yêu cầu của bạn</h4>
+                                    <p>Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất để bắt đầu thi công.</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Form item - InProgress -->
-                    <div class="form-step">
-                        @if (Model.LstConstructionProcess != null && Model.LstConstructionProcess.Count > 0)
-                        {
-                            <div class="row mb-3">
+                        <!-- Form item - InProgress -->
+                        <div class="form-step">
+                            @if (Model.LstConstructionProcess != null && Model.LstConstructionProcess.Count > 0)
+                            {
+                                <div class="row mb-3">
+                                    <div class="col-md-12">
+                                        <h4>Quy trình thi công</h4>
+                                        <table class="table table-bordered" id="inProgressTable">
+                                            <thead>
+                                                <tr>
+                                                    <th width="100px">Bước</th>
+                                                    <th class="text-left">Thông tin</th>
+                                                    <th width="250px" class="text-left">Giao việc cho</th>
+                                                    <th class="text-center">Trạng thái</th>
+                                                    <th class="text-left">Ghi chú</th>
+                                                    <th class="text-center">Thời gian cập nhật</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Rows will be added dynamically here -->
+                                                @foreach (var process in Model.LstConstructionProcess)
+                                                {
+                                                    <tr>
+                                                        <td class="text-right">@process.Step</td>
+                                                        <td class="text-left">@Html.Raw(process.StepInfo)</td>
+                                                        <td class="text-left">@Html.Raw(process.AssignedStaff?.FullName)</td>
+                                                        <td class="text-center">@await Html.PartialAsync("_ConstructionProcessStatusPartial", process.Status)</td>
+                                                        <td class="text-left">@Html.Raw(process.Note)</td>
+                                                        <td class="text-center">@process.UpdatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Form item - Completed -->
+                        <div class="form-step">
+                            <div class="row">
                                 <div class="col-md-12">
-                                    <h4>Quy trình thi công</h4>
-                                    <table class="table table-bordered" id="inProgressTable">
+                                    <h4>Lịch sử đơn hàng</h4>
+                                    <table class="table table-bordered">
                                         <thead>
                                             <tr>
-                                                <th width="100px">Bước</th>
-                                                <th class="text-left">Thông tin</th>
-                                                <th width="250px" class="text-left">Giao việc cho</th>
+                                                <th class="text-right">Mã đơn hàng</th>
+                                                <th class="text-right">Tổng tiền</th>
+                                                <th class="text-center">Phương thức thanh toán</th>
                                                 <th class="text-center">Trạng thái</th>
-                                                <th class="text-left">Ghi chú</th>
-                                                <th class="text-center">Thời gian cập nhật</th>
+                                                <th class="text-center">Đánh giá</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <!-- Rows will be added dynamically here -->
-                                            @foreach (var process in Model.LstConstructionProcess)
+                                            @if (Model.CustomerOrderHistory != null)
                                             {
                                                 <tr>
-                                                    <td class="text-right">@process.Step</td>
-                                                    <td class="text-left">@Html.Raw(process.StepInfo)</td>
-                                                    <td class="text-left">@Html.Raw(process.AssignedStaff?.FullName)</td>
-                                                    <td class="text-center">@await Html.PartialAsync("_ConstructionProcessStatusPartial", process.Status)</td>
-                                                    <td class="text-left">@Html.Raw(process.Note)</td>
-                                                    <td class="text-center">@process.UpdatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                                    <td class="text-right">@Model.CustomerOrderHistory.HistoryId</td>
+                                                    <td class="text-right">@Model.CustomerOrderHistory.ActualCost.ToString("C", new System.Globalization.CultureInfo("vi-VN"))</td>
+                                                    <td class="text-center">@await Html.PartialAsync("_PaymentMethodPartial", Model.CustomerOrderHistory.PaymentMethod)</td>
+                                                    <td class="text-center">@await Html.PartialAsync("_PaymentStatusPartial", Model.CustomerOrderHistory.PaymentStatus)</td>
+                                                    <td class="text-center">
+                                                        @if (Model.CustomerOrderHistory.PaymentStatus == (int)PaymentStatus.Paid && Model.Feedback == null)
+                                                        {
+                                                            <button class="btn btn-primary btn-sm m-auto"
+                                                                    btn-action="feedback"
+                                                                    btn-url="@Url.Page("/User/Service/Detail")"
+                                                                    btn-path="CreateFeedback&requestId=@Model.ConstructionRequest?.RequestId"
+                                                                    btn-id="@Model.ConstructionRequest?.RequestId">
+                                                                Đánh giá
+                                                            </button>
+                                                        }
+                                                        else
+                                                        {
+                                                            <button class="btn btn-primary btn-sm m-auto"
+                                                                    btn-action="viewFeedback"
+                                                                    btn-url="@Url.Page("/User/Service/Detail")"
+                                                                    btn-path="CreateFeedback&requestId=@Model.ConstructionRequest?.RequestId"
+                                                                    btn-id="@Model.ConstructionRequest?.RequestId">
+                                                                Xem đánh giá
+                                                            </button>
+                                                        }
+                                                    </td>
                                                 </tr>
                                             }
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
-                        }
-                    </div>
-
-                    <!-- Form item - Completed -->
-                    <div class="form-step">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <h4>Lịch sử đơn hàng</h4>
-                                <table class="table table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-right">Mã đơn hàng</th>
-                                            <th class="text-right">Tổng tiền</th>
-                                            <th class="text-center">Phương thức thanh toán</th>
-                                            <th class="text-center">Trạng thái</th>
-                                            <th class="text-center">Đánh giá</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <!-- Rows will be added dynamically here -->
-                                        @if (Model.CustomerOrderHistory != null)
-                                        {
-                                            <tr>
-                                                <td class="text-right">@Model.CustomerOrderHistory.HistoryId</td>
-                                                <td class="text-right">@Model.CustomerOrderHistory.ActualCost.ToString("C", new System.Globalization.CultureInfo("vi-VN"))</td>
-                                                <td class="text-center">@await Html.PartialAsync("_PaymentMethodPartial", Model.CustomerOrderHistory.PaymentMethod)</td>
-                                                <td class="text-center">@await Html.PartialAsync("_PaymentStatusPartial", Model.CustomerOrderHistory.PaymentStatus)</td>
-                                                <td class="text-center">
-                                                @if (Model.CustomerOrderHistory.PaymentStatus == (int)PaymentStatus.Paid && Model.Feedback == null)
-                                                {
-                                                    <button 
-                                                        class="btn btn-primary btn-sm m-auto"
-                                                        btn-action="feedback"
-                                                        btn-url="@Url.Page("/User/Service/Detail")"
-                                                        btn-path="CreateFeedback&requestId=@Model.ConstructionRequest?.RequestId"
-                                                        btn-id="@Model.ConstructionRequest?.RequestId">
-                                                        Đánh giá
-                                                    </button>
-                                                }else{
-                                                    <button 
-                                                        class="btn btn-primary btn-sm m-auto"
-                                                        btn-action="viewFeedback"
-                                                        btn-url="@Url.Page("/User/Service/Detail")"
-                                                        btn-path="CreateFeedback&requestId=@Model.ConstructionRequest?.RequestId"
-                                                        btn-id="@Model.ConstructionRequest?.RequestId">
-                                                        Xem đánh giá
-                                                    </button>
-                                                }
-                                                </td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
                         </div>
                     </div>
-                </div>
-                <!-- Form Ends -->
+                    <!-- Form Ends -->
+                }
+                else
+                {
+                    <div class="text-center mt-5">
+                        <h1>Yêu cầu của bạn đã bị hủy</h1>
+                        <h5>Lý do hủy: @Model.ConstructionRequest.RejectReason</h5>
+                    </div>
+                }
             </div>
         </div>
     </div>
 </div>
 
 @section Scripts {
-    <script src="~/js/ckeditor5/ckeditor.min.js"></script>
-    <script>
-        const prevBtns = document.querySelectorAll(".btn-prev");
-        const nextBtns = document.querySelectorAll(".btn-next");
-        const progress = document.querySelector(".progress");
-        const formSteps = document.querySelectorAll(".form-step");
-        const progressSteps = document.querySelectorAll(".progress-step");
+    @if (Model.ConstructionRequest.Status != (int)ConstructionRequestsStatus.Rejected)
+    {
+        <script src="~/js/ckeditor5/ckeditor.min.js"></script>
+        <script>
+            const prevBtns = document.querySelectorAll(".btn-prev");
+            const nextBtns = document.querySelectorAll(".btn-next");
+            const progress = document.querySelector(".progress");
+            const formSteps = document.querySelectorAll(".form-step");
+            const progressSteps = document.querySelectorAll(".progress-step");
 
-        let formStepsNum = 0;
+            let formStepsNum = 0;
 
-        /* Event Listener for Next Button. */
-        nextBtns.forEach((btn) => {
+            /* Event Listener for Next Button. */
+            nextBtns.forEach((btn) => {
             btn.addEventListener("click", () => {
-                formStepsNum++;
-                updateFormSteps();
-                updateProgressbar();
+            formStepsNum++;
+            updateFormSteps();
+            updateProgressbar();
             });
-        });
+            });
 
-        /* Event Listener for Back Button. */
-        prevBtns.forEach((btn) => {
+            /* Event Listener for Back Button. */
+            prevBtns.forEach((btn) => {
             btn.addEventListener("click", () => {
-                formStepsNum--;
-                updateFormSteps();
-                updateProgressbar();
+            formStepsNum--;
+            updateFormSteps();
+            updateProgressbar();
             });
-        });
+            });
 
-        /* Event click progressSteps */
-        progressSteps.forEach((progressStep, index) => {
+            /* Event click progressSteps */
+            progressSteps.forEach((progressStep, index) => {
             progressStep.addEventListener("click", () => {
-                formStepsNum = index;
-                updateFormSteps();
-                updateProgressbar();
+            formStepsNum = index;
+            updateFormSteps();
+            updateProgressbar();
             });
-        });
+            });
 
-        /* Updates Form Items */
-        function updateFormSteps() {
+            /* Updates Form Items */
+            function updateFormSteps() {
             formSteps.forEach((formStep) => {
-                formStep.classList.contains("form-step-active") &&
-                    formStep.classList.remove("form-step-active")
+            formStep.classList.contains("form-step-active") &&
+            formStep.classList.remove("form-step-active")
             })
             formSteps[formStepsNum].classList.add("form-step-active");
-        }
+            }
 
-        /* Updates Progress Bar */
-        function updateProgressbar() {
+            /* Updates Progress Bar */
+            function updateProgressbar() {
             progressSteps.forEach((progressStep, index) => {
-                if (index < formStepsNum + 1) {
-                    progressStep.classList.add('progress-step-active')
+            if (index < formStepsNum + 1) {
+            progressStep.classList.add('progress-step-active')
 
 
-                } else {
-                    progressStep.classList.remove('progress-step-active')
-                }
+            } else {
+            progressStep.classList.remove('progress-step-active')
+            }
             })
             progress.style.width = ((formStepsNum) / (progressSteps.length - 1)) * 100 + "%";
-        }
-    </script>
-    <script>
-        $(document).ready(function () {
+            }
+        </script>
+        <script>
+            $(document).ready(function () {
             $.mask();
             if ($('#customDesignDescription').length > 0) {
-                ClassicEditor
-                    .create(document.querySelector('#customDesignDescription'))
-                    .catch(error => {
-                        console.error(error);
-                    });
+            ClassicEditor
+            .create(document.querySelector('#customDesignDescription'))
+            .catch(error => {
+            console.error(error);
+            });
             }
 
             if ($('#inProgressTable').length > 0) {
-                $('#inProgressTable').DataTable();
+            $('#inProgressTable').DataTable();
             }
 
             let lastStatus = @(Model.ConstructionRequest?.Status - 1);
             if (lastStatus > 0) {
-                formStepsNum = lastStatus;
-                updateFormSteps();
-                updateProgressbar();
+            formStepsNum = lastStatus;
+            updateFormSteps();
+            updateProgressbar();
             }
             $.unmask();
 
@@ -301,60 +313,60 @@
             $('#maintenanceServiceId').val(maintenanceServiceId);
 
             $('#maintenanceServiceId').change(function () {
-                var costEstimate = $('#maintenanceServiceId option:selected').data('expected-price');
-                if (!costEstimate) {
-                    $('#costEstimate').val('Liên hệ');
-                } else {
-                    costEstimate = parseFloat(costEstimate);
-                    $('#costEstimate').val(costEstimate.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }));
-                }
+            var costEstimate = $('#maintenanceServiceId option:selected').data('expected-price');
+            if (!costEstimate) {
+            $('#costEstimate').val('Liên hệ');
+            } else {
+            costEstimate = parseFloat(costEstimate);
+            $('#costEstimate').val(costEstimate.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }));
+            }
             });
 
             $('form[name="detail-service"]').submit(async function (e) {
-                e.preventDefault();
-                var maintenanceServiceId = $('#maintenanceServiceId').val();
-                var customDesignDescription = $('#customDesignDescription').val();
-                var url = $(this).data('url');
-                var handler = $(this).data('handler');
-                var id = $('input[name="requestId"]').val();
+            e.preventDefault();
+            var maintenanceServiceId = $('#maintenanceServiceId').val();
+            var customDesignDescription = $('#customDesignDescription').val();
+            var url = $(this).data('url');
+            var handler = $(this).data('handler');
+            var id = $('input[name="requestId"]').val();
 
-                let cf = await Swal.fire({
-                    title: 'Bạn có chắc chắn muốn cập nhật yêu cầu này?',
-                    text: "Hành động này không thể hoàn tác!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Đồng ý',
-                    cancelButtonText: 'Hủy'
-                });
-                if (!cf.isConfirmed) return;
-
-                let { success, message } = await $.callAjax(`${url}?handler=${handler}&id=${id}`, 'PUT', {
-                    maintenanceServiceId: maintenanceServiceId,
-                    customDesignDescription: customDesignDescription
-                });
-
-                if (!success) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: message
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Cập nhật yêu cầu thành công!',
-                        text: message
-                    }).then(() => {
-                        window.location.reload();
-                    });
-                }
+            let cf = await Swal.fire({
+            title: 'Bạn có chắc chắn muốn cập nhật yêu cầu này?',
+            text: "Hành động này không thể hoàn tác!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Đồng ý',
+            cancelButtonText: 'Hủy'
             });
-        });
-    </script>
-    <script>
-        $(document).ready(function () {
+            if (!cf.isConfirmed) return;
+
+            let { success, message } = await $.callAjax(`${url}?handler=${handler}&id=${id}`, 'PUT', {
+            maintenanceServiceId: maintenanceServiceId,
+            customDesignDescription: customDesignDescription
+            });
+
+            if (!success) {
+            Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: message
+            });
+            } else {
+            Swal.fire({
+            icon: 'success',
+            title: 'Cập nhật yêu cầu thành công!',
+            text: message
+            }).then(() => {
+            window.location.reload();
+            });
+            }
+            });
+            });
+        </script>
+        <script>
+            $(document).ready(function () {
             $('a[btn-action], button[btn-action]').click(async function () {
                 var action = $(this).attr('btn-action');
                 var url = $(this).attr('btn-url');
@@ -368,22 +380,22 @@
                     let { value: formValues } = await Swal.fire({
                         title: 'Đánh giá dịch vụ',
                         html: `
-                            <div class="form-group text-left">
-                                <label for="rating">Rating:</label>
-                                <div id="rating" class="rating">
-                                    <input type="number" name="rating" hidden>
-                                    <i class="fa fa-star star" data-value="1" style="--i: 0;"></i>
-                                    <i class="fa fa-star star" data-value="2" style="--i: 1;"></i>
-                                    <i class="fa fa-star star" data-value="3" style="--i: 2;"></i>
-                                    <i class="fa fa-star star" data-value="4" style="--i: 3;"></i>
-                                    <i class="fa fa-star star" data-value="5" style="--i: 4;"></i>
-                                </div>
-                            </div>
-                            <div class="form-group text-left mt-3">
-                                <label for="comment">Bình luận:</label>
-                                <textarea id="comment" class="form-control" placeholder="Nhập bình luận..." rows="3"></textarea>
-                            </div>
-                        `,
+                                            <div class="form-group text-left">
+                                                <label for="rating">Rating:</label>
+                                                <div id="rating" class="rating">
+                                                    <input type="number" name="rating" hidden>
+                                                    <i class="fa fa-star star" data-value="1" style="--i: 0;"></i>
+                                                    <i class="fa fa-star star" data-value="2" style="--i: 1;"></i>
+                                                    <i class="fa fa-star star" data-value="3" style="--i: 2;"></i>
+                                                    <i class="fa fa-star star" data-value="4" style="--i: 3;"></i>
+                                                    <i class="fa fa-star star" data-value="5" style="--i: 4;"></i>
+                                                </div>
+                                            </div>
+                                            <div class="form-group text-left mt-3">
+                                                <label for="comment">Bình luận:</label>
+                                                <textarea id="comment" class="form-control" placeholder="Nhập bình luận..." rows="3"></textarea>
+                                            </div>
+                                        `,
                         focusConfirm: false,
                         showCancelButton: action == "feedback",
                         confirmButtonText: action == "feedback" ? 'Gửi đánh giá' : 'Đóng',
@@ -395,13 +407,13 @@
                             if (action == "viewfeedback") {
                                 let rating = @(Model.Feedback?.Rating ?? 0),
                                     comment = '@Html.Raw(Model.Feedback?.Comment)';
-                                    
+
                                 allStar.each(function (i) {
                                     if (i < rating) {
                                         $(allStar[i]).addClass('active');
                                     }
                                 });
-                                
+
                                 ratingValue.val(rating);
                                 $('#comment').val(comment);
                                 $('#comment').attr('disabled', 'disabled');
@@ -432,11 +444,11 @@
                         preConfirm: () => {
                             const rating = $('#rating input').val();
                             const comment = $('#comment').val();
-                            
+
                             if (!rating) {
                                 Swal.showValidationMessage('Vui lòng chọn số sao để đánh giá');
                             }
-                            
+
                             return { rating, comment };
                         },
                     });
@@ -462,4 +474,5 @@
             });
         });
     </script>
+    }
 }

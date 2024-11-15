@@ -34,6 +34,7 @@ namespace KoiPondConstructionManagement.Pages.User.Service
                 .Include(x => x.MaintenanceService)
                 .Include(x => x.Design)
                 .Where(x => x.CustomerId == User.GetUserId())
+                .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync();
         }
 

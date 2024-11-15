@@ -55,10 +55,10 @@
                     <div class="htc__bst__service text-center mt--30">
                         <div class="htc__bst__service__inner">
                             <div class="row">
-                                <table id="datatable" class="display" style="width:100%">
+                                <table id="dataTable" class="display" style="width:100%">
                                     <thead>
                                         <tr>
-                                            <th class="text-right">STT</th>
+                                            <th class="text-right">Số yêu cầu</th>
                                             <th class="text-left">Tên dịch vụ</th>
                                             <th class="text-center">Ngày tạo</th>
                                             <th class="text-right">Mức giá dự kiến</th>
@@ -70,13 +70,16 @@
                                         @for (int i = 0; i < Model.ConstructionRequests.Count; i++)
                                         {
                                             <tr>
-                                                <td class="text-right">@(i + 1)</td>
+                                                <td class="text-right">@Model.ConstructionRequests[i].RequestId</td>
                                                 <td class="text-left">@Model.ConstructionRequests[i].MaintenanceService?.ServiceName</td>
                                                 <td class="text-center">@Model.ConstructionRequests[i].CreatedAt.ToString("dd/MM/yyyy")</td>
                                                 <td class="text-right">@Model.ConstructionRequests[i].CostEstimate?.ToString("C", new System.Globalization.CultureInfo("vi-VN"))</td>
                                                 <td class="text-center">@await Html.PartialAsync("_ConstructionRequestsStatusPartial", Model.ConstructionRequests[i].Status)</td>
                                                 <td class="text-center">
-                                                    <a asp-page="/User/Service/Detail" asp-route-id="@Model.ConstructionRequests[i].RequestId" class="btn btn-primary">Xem chi tiết</a>
+                                                    @if (Model.ConstructionRequests[i].Status != (int)ConstructionRequestsStatus.Cancelled)
+                                                    {
+                                                        <a asp-page="/User/Service/Detail" asp-route-id="@Model.ConstructionRequests[i].RequestId" class="btn btn-primary">Xem chi tiết</a>
+                                                    }
                                                     @if (Model.ConstructionRequests[i].Status == (int)ConstructionRequestsStatus.Pending)
                                                     {
                                                         <a href="javascript:void(0)"
@@ -104,10 +107,12 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-            $('#datatable').DataTable();
+            $('#dataTable').DataTable({
+                ordering: false // Tắt sắp xếp mặc định
+            });
 
             // tạo base btn click
-            $('a[btn-action]').click(async function () {
+            $('#dataTable').on('click', 'a[btn-action]', async function () {
                 var action = $(this).attr('btn-action');
                 var url = $(this).attr('btn-url');
                 var path = $(this).attr('btn-path');
