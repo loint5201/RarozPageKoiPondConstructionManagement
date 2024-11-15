@@ -8,7 +8,7 @@
 <!-- DataTales Example -->
 <div class="card shadow mb-4">
     <div class="card-body" style="z-index: 0">
-        <div class="row">
+        @* <div class="row">
             <div class="col-md-3">
                 <div class="form-group" style="margin-bottom: 0">
                     <label for="quickStatus">Trạng thái</label>
@@ -49,7 +49,7 @@
                     </button>
                 </div>
             </div>
-        </div>
+        </div> *@
         <!-- Form Begins -->
         <div class="form">
             <!-- Progress Bar  -->
@@ -147,10 +147,13 @@
                                 <!-- Rows will be added dynamically here -->
                             </tbody>
                         </table>
-                        <div class="d-flex gap-10">
-                            <button class="btn btn-primary" id="addRowBtn">Thêm bước mới</button>
-                            <button class="btn btn-success" id="submitBtn">Lưu</button>
-                        </div>
+                        @if (Model.ConstructionRequest.Status == (int)ConstructionRequestsStatus.Approved)
+                        {
+                            <div class="d-flex gap-10">
+                                <button class="btn btn-primary" id="addRowBtn">Thêm bước mới</button>
+                                <button class="btn btn-success" id="submitBtn">Lưu</button>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
@@ -299,6 +302,7 @@
                 formStep.classList.contains("form-step-active") &&
                     formStep.classList.remove("form-step-active")
             })
+
             formSteps[formStepsNum].classList.add("form-step-active");
         }
 
@@ -339,6 +343,7 @@
             if (!constructionProcesses || constructionProcesses.length == 0) {
                 $('.process-initiation').show();
             }
+            let requestStatus = @(Model.ConstructionRequest?.Status);
 
             // Danh sách lưu trữ các bước công việc
             let stepsList = [];
@@ -367,6 +372,12 @@
                 return select;
             }
 
+            function generatRowAction(step) {
+                const row = `<button type="button" class="btn btn-sm btn-danger deleteRowBtn">Xóa</button>`;
+                if (requestStatus == 2) return row;
+                return ''
+            }
+
             // Function to render rows from stepsList
             function renderTable() {
                 tableBody.empty(); // Clear the current table
@@ -379,12 +390,17 @@
                             <td>${generateStatusSelect(step.status ?? 0)}</td> <!-- Dropdown cho trạng thái -->
                             <td style="max-width: 500px"><textarea is-ckeditor type="text" class="form-control" name="note" data-field="note">${step.note}</textarea></td>
                             <td class="text-center">
-                                <button type="button" class="btn btn-sm btn-danger deleteRowBtn">Xóa</button>
+                                ${generatRowAction(step)}
                             </td>
                         </tr>
                     `;
 
                     tableBody.append(newRow);
+
+                    // nếu table có is-disable thì disable all input, select, textarea
+                    if (requestStatus != 2) {
+                        tableBody.find('input, select, textarea').attr('disabled', true);
+                    }
                 });
 
                 // Tạo mới CKEditor cho tất cả có attribute is-ckeditor

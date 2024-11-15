@@ -1,11 +1,13 @@
 ﻿using Domain.ResponseData;
 using Infrastructure.Data;
+using KoiPondConstructionManagement.Middleware;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 namespace KoiPondConstructionManagement.Pages.Manager.Admin.Service
 {
+    [AuthorizeRole(Domain.Enums.AppRoles.Manager)]
     public class IndexModel : PageModel
     {
         private KoiPondConstructionManagementContext _context;

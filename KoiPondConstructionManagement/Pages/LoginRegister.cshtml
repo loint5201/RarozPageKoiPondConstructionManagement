@@ -9,8 +9,12 @@
         <div class="row">
             <div class="col-md-6 col-md-offset-3">
                 <ul class="login__register__menu" role="tablist">
-                    <li role="presentation" class="login active"><a href="#login" role="tab" data-toggle="tab">Đăng nhập</a></li>
-                    <li role="presentation" class="register"><a href="#register" role="tab" data-toggle="tab">Đăng ký</a></li>
+                    <li role="presentation" class="login @(string.Equals(Model.Action, "login", StringComparison.OrdinalIgnoreCase) ? "active": "")">
+                        <a asp-page="/LoginRegister" asp-route-action="login">Đăng nhập</a>
+                    </li>
+                    <li role="presentation" class="register @(string.Equals(Model.Action, "register", StringComparison.OrdinalIgnoreCase) ? "active": "")">
+                        <a asp-page="/LoginRegister" asp-route-action="register">Đăng ký</a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -18,42 +22,86 @@
         <div class="row">
             <div class="col-md-6 col-md-offset-3">
                 <div class="htc__login__register__wrap">
-                    <!-- Hiển thị tổng hợp lỗi cho form đăng nhập -->
-                    @if (Model.ModelState.ErrorCount > 0)
+                    
+                    @if (string.Equals(Model.Action, "login", StringComparison.OrdinalIgnoreCase))
                     {
-                            <div asp-validation-summary="All" class="alert alert-danger validation-summary-errors" role="alert" data-valmsg-summary="true"></div>
-                    }
-                    <!-- Start Single Content cho form đăng nhập -->
-                    <form id="login" role="tabpanel" class="single__tabs__panel tab-pane fade in active" method="post" asp-page-handler="Login">
-                        <div class="login">
-                            <input asp-for="LoginModel.Email" type="text" placeholder="Email*" />
-                            <input asp-for="LoginModel.Password" type="password" placeholder="Mật khẩu*" />
-                        </div>
-                        <div class="tabs__checkbox">
-                            <input type="checkbox" asp-for="LoginModel.RememberMe" />
-                            <span> Ghi nhớ đăng nhập</span>
-                            <span class="forget"><a href="#">Quên mật khẩu?</a></span>
-                        </div>
-                        <div class="htc__login__btn mt--30">
-                            <button type="submit">Đăng nhập</button>
-                        </div>
-                    </form>
-                    <!-- End Single Content -->
+                        @if (Model.GetModelErrors(nameof(Model.LoginModel)).Any())
+                        {
+                            <ul class="alert alert-danger">
+                                @foreach (var error in Model.GetModelErrors(nameof(Model.LoginModel)))
+                                {
+                                    <li>@error</li>
+                                }
+                            </ul>
+                        }
 
-                    <!-- Start Single Content cho form đăng ký -->
-                    <form id="register" role="tabpanel" class="single__tabs__panel tab-pane fade" method="post" asp-page-handler="Register">
-                        <div class="login">
-                            <input asp-for="RegisterModel.FullName" placeholder="Họ và tên*" />
-                            <input asp-for="RegisterModel.Email" placeholder="Email*" />
-                            <input asp-for="RegisterModel.Password" type="password" placeholder="Mật khẩu*" />
-                            <input asp-for="RegisterModel.PhoneNumber" placeholder="Số điện thoại*" />
-                            <input asp-for="RegisterModel.Address" placeholder="Địa chỉ*" />
-                        </div>
-                        <div class="htc__login__btn">
-                            <button type="submit">Đăng ký</button>
-                        </div>
-                    </form>
-                    <!-- End Single Content -->
+                        <!-- Start Single Content cho form đăng nhập -->
+                        <form id="login" role="tabpanel" class="single__tabs__panel tab-pane fade in active" method="post" asp-page-handler="Login" asp-route-action="login">
+                            <div class="login">
+                                <div class="form-group">
+                                    <input asp-for="LoginModel.Email" type="text" placeholder="Email*" />
+                                    <span asp-validation-for="LoginModel.Email" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <input asp-for="LoginModel.Password" type="password" placeholder="Mật khẩu*" />
+                                    <span asp-validation-for="LoginModel.Password" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="tabs__checkbox">
+                                <input type="checkbox" asp-for="LoginModel.RememberMe" />
+                                <span> Ghi nhớ đăng nhập</span>
+                                <span class="forget"><a href="#">Quên mật khẩu?</a></span>
+                            </div>
+                            <div class="htc__login__btn mt--30">
+                                <button type="submit">Đăng nhập</button>
+                            </div>
+                        </form>
+                        <!-- End Single Content -->
+                    }
+
+                    @if (string.Equals(Model.Action, "register", StringComparison.OrdinalIgnoreCase))
+                    {
+                        @if (Model.GetModelErrors(nameof(Model.RegisterModel)).Any())
+                        {
+                            <ul class="alert alert-danger">
+                                @foreach (var error in Model.GetModelErrors(nameof(Model.RegisterModel)))
+                                {
+                                    <li>@error</li>
+                                }
+                            </ul>
+                        }
+
+                        <!-- Start Single Content cho form đăng ký -->
+                        <form id="register" role="tabpanel" class="single__tabs__panel tab-pane fade in active" method="post" asp-page-handler="Register" asp-route-action="register">
+                            <div class="login">
+                                <div class="form-group">
+                                    <input asp-for="RegisterModel.FullName" placeholder="Họ và tên*" />
+                                    <span asp-validation-for="RegisterModel.FullName" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <input asp-for="RegisterModel.Email" placeholder="Email*" />
+                                    <span asp-validation-for="RegisterModel.Email" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <input asp-for="RegisterModel.Password" type="password" placeholder="Mật khẩu*" />
+                                    <span asp-validation-for="RegisterModel.Password" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <input asp-for="RegisterModel.PhoneNumber" placeholder="Số điện thoại*" />
+                                    <span asp-validation-for="RegisterModel.PhoneNumber" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <input asp-for="RegisterModel.Address" placeholder="Địa chỉ*" />
+                                    <span asp-validation-for="RegisterModel.Address" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="htc__login__btn">
+                                <button type="submit">Đăng ký</button>
+                            </div>
+                        </form>
+                        <!-- End Single Content -->
+                    }
                 </div>
 
             </div>
@@ -62,21 +110,3 @@
     </div>
 </div>
 <!-- End Login Register Area -->
-@section Scripts {
-    <script>
-        $(document).ready(function () {
-          // check trên url nếu có #login thì active tab login, ngược lại active tab register
-            if (window.location.href.indexOf("#login") > -1) {
-                $('.login').addClass('active');
-                $('.register').removeClass('active');
-                $('#login').addClass('in active');
-                $('#register').removeClass('in active');
-            } else {
-                $('.register').addClass('active');
-                $('.login').removeClass('active');
-                $('#register').addClass('in active');
-                $('#login').removeClass('in active');
-            }
-        });
-    </script>
-}

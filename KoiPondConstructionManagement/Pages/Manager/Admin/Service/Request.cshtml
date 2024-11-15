@@ -19,6 +19,7 @@
                 <thead>
                     <tr>
                         <th class="text-right">Số yêu cầu</th>
+                        <th class="text-center">Ngày yêu cầu</th>
                         <th class="text-center">Tên dịch vụ</th>
                         <th class="text-right">Giá thi công dự kiến</th>
                         <th class="text-left">Khách hàng</th>
@@ -33,6 +34,7 @@
                     {
                         <tr>
                             <td class="text-right">@request.RequestId</td>
+                            <td class="text-right">@request.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
                             <td class="text-center">@request.MaintenanceService?.ServiceName</td>
                             <th class="text-right">@request.CostEstimate?.ToString("C", new System.Globalization.CultureInfo("vi-VN"))</th>
                             <td class="text-left">@request.Customer?.FullName</td>
@@ -52,12 +54,12 @@
                                         Duyệt
                                     </a>
                                 }
-                                else
+                                else if (request.Status != (int)ConstructionRequestsStatus.Rejected && request.Status != (int)ConstructionRequestsStatus.Cancelled)
                                 {
                                     <a asp-page="/Manager/Admin/Service/RequestDetail" asp-route-id="@request.RequestId" class="btn btn-primary">Chi tiết</a>
                                 }
 
-                                @if (request.Status != (int)ConstructionRequestsStatus.Completed && request.Status != (int)ConstructionRequestsStatus.Rejected && request.Status != (int)ConstructionRequestsStatus.Cancelled)
+                                @if (request.Status == (int)ConstructionRequestsStatus.Pending)
                                 {
                                     <a href="javascript:void(0)"
                                        class="btn btn-danger"
@@ -84,11 +86,15 @@
     <script src="~/admin/vendor/datatables/dataTables.bootstrap4.min.js"></script>
 
     <!-- Page level custom scripts -->
-    <script src="~/admin/js/demo/datatables-demo.js"></script>
+    @* <script src="~/admin/js/demo/datatables-demo.js"></script> *@
     <script>
         $(document).ready(function () {
+            $('#dataTable').DataTable({
+                 ordering: false // Tắt sắp xếp mặc định
+            });
+
              // tạo base btn click
-            $('a[btn-action]').click(async function () {
+            $('#dataTable').on('click', 'a[btn-action]', async function () {
                 var action = $(this).attr('btn-action');
                 var url = $(this).attr('btn-url');
                 var path = $(this).attr('btn-path');

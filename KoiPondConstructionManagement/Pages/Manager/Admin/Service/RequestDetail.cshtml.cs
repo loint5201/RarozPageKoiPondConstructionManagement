@@ -3,6 +3,7 @@ using Domain.Entities;
 using Domain.Enums;
 using Domain.ResponseData;
 using Infrastructure.Data;
+using KoiPondConstructionManagement.Middleware;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using Newtonsoft.Json;
 
 namespace KoiPondConstructionManagement.Pages.Manager.Admin.Service
 {
+    [AuthorizeRole(Domain.Enums.AppRoles.Manager)]
     public class RequestDetailModel : PageModel
     {
         private KoiPondConstructionManagementContext _context;
@@ -27,6 +29,11 @@ namespace KoiPondConstructionManagement.Pages.Manager.Admin.Service
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Lấy chi tiết dịch vụ khách hàng yêu cầu
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task OnGetAsync(int id)
         {
             ConstructionRequest = await _context.ConstructionRequests
@@ -38,8 +45,8 @@ namespace KoiPondConstructionManagement.Pages.Manager.Admin.Service
             {
                 (int)AppRoles.Construction_Staff,
                 (int)AppRoles.Design_Staff,
-                (int)AppRoles.Consulting_Staff,
-                (int)AppRoles.Manager,
+                //(int)AppRoles.Consulting_Staff,
+                //(int)AppRoles.Manager,
             };
 
             var systemUsers = await _context.Users.Where(x => systemRoles.Contains(x.RoleId.Value)).ToListAsync();
@@ -58,33 +65,56 @@ namespace KoiPondConstructionManagement.Pages.Manager.Admin.Service
                     .FirstOrDefaultAsync(x => x.RequestId == id);
         }
 
+        /// <summary>
+        /// Cập nhật lại quy trình
+        /// </summary>
+        /// <param name="requestId"></param>
+        /// <param name="process"></param>
+        /// <returns></returns>
         public async Task<IActionResult> OnPostUpdateProcessAsync(int requestId, List<ConstructionProcessRequest> process)
         {
             var serviceResponse = new ServiceResponse();
             try
             {
-                var request = await _context.ConstructionRequests.FirstOrDefaultAsync(x => x.RequestId == requestId);
+                // Lấy request cần xử lý
+                var request = await _context.ConstructionRequests
+                    .FirstOrDefaultAsync(x => x.RequestId == requestId);
+
                 if (request == null)
                 {
                     return NotFound();
                 }
 
-                var lstProcess = await _context.ConstructionProcesses.Where(x => x.RequestId == requestId).ToListAsync();
-                if (lstProcess.Count > 0)
+                // Nếu request đã duyệt, cập nhật trạng thái sang "In Progress"
+                if (request.Status == (int)ConstructionRequestsStatus.Approved)
                 {
-                    var processIds = process.Select(x => x.ProcessId).ToList();
-                    var deleteProcess = lstProcess.Where(x => !processIds.Contains(x.ProcessId)).ToList();
-                    if (deleteProcess.Count > 0)
-                    {
-                        _context.ConstructionProcesses.RemoveRange(deleteProcess);
-                    }
+                    request.Status = (int)ConstructionRequestsStatus.InProgress;
                 }
 
+                // Lấy danh sách quy trình hiện tại từ database
+                var existingProcesses = await _context.ConstructionProcesses
+                    .Where(x => x.RequestId == requestId)
+                    .ToListAsync();
+
+                var processIds = process.Select(x => x.ProcessId).ToHashSet();
+
+                // Xóa các process không còn tồn tại trong danh sách mới
+                var processesToDelete = existingProcesses
+                    .Where(x => !processIds.Contains(x.ProcessId))
+                    .ToList();
+
+                if (processesToDelete.Any())
+                {
+                    _context.ConstructionProcesses.RemoveRange(processesToDelete);
+                }
+
+                // Cập nhật hoặc thêm mới các process
                 foreach (var item in process)
                 {
-                    var processEntity = lstProcess.FirstOrDefault(x => x.ProcessId == item.ProcessId);
+                    var processEntity = existingProcesses.FirstOrDefault(x => x.ProcessId == item.ProcessId);
                     if (processEntity == null)
                     {
+                        // Tạo mới process
                         processEntity = new ConstructionProcess
                         {
                             RequestId = requestId,
@@ -96,21 +126,37 @@ namespace KoiPondConstructionManagement.Pages.Manager.Admin.Service
                             CreatedAt = DateTime.Now,
                         };
                         _context.ConstructionProcesses.Add(processEntity);
-                        continue;
                     }
-
-                    if (processEntity.Status != item.Status)
+                    else
                     {
-                        processEntity.UpdatedAt = DateTime.Now;
+                        // Cập nhật process hiện có
+                        if (processEntity.Status != item.Status)
+                        {
+                            processEntity.UpdatedAt = DateTime.Now;
+                        }
+
+                        processEntity.Status = item.Status;
+                        processEntity.Note = item.Note;
+                        processEntity.StepInfo = item.StepInfo;
+                        processEntity.AssignedStaffId = item.AssignedStaffId;
+                        _context.ConstructionProcesses.Update(processEntity);
                     }
-                    processEntity.Status = item.Status;
-                    processEntity.Note = item.Note;
-                    processEntity.StepInfo = item.StepInfo;
-                    processEntity.AssignedStaffId = item.AssignedStaffId;
-                    _context.ConstructionProcesses.Update(processEntity);
                 }
 
+                // Lưu thay đổi tất cả vào database
                 await _context.SaveChangesAsync();
+
+                // Kiểm tra nếu tất cả các quy trình đã hoàn thành
+                var allCompleted = await _context.ConstructionProcesses
+                    .Where(x => x.RequestId == requestId)
+                    .AllAsync(x => x.Status == (int)ConstructionProcessStatus.Completed);
+
+                if (allCompleted)
+                {
+                    request.Status = (int)ConstructionRequestsStatus.Completed;
+                    await _context.SaveChangesAsync();
+                }
+
                 serviceResponse.OnSuccess();
             }
             catch (Exception ex)
@@ -121,6 +167,13 @@ namespace KoiPondConstructionManagement.Pages.Manager.Admin.Service
             return new JsonResult(serviceResponse);
         }
 
+
+        /// <summary>
+        /// Khởi tạo đơn thanh toán
+        /// </summary>
+        /// <param name="requestId"></param>
+        /// <param name="order"></param>
+        /// <returns></returns>
         public async Task<IActionResult> OnPostCreateOrderAsync(int requestId, CustomerOrderHistory order)
         {
             var serviceResponse = new ServiceResponse();
@@ -159,6 +212,11 @@ namespace KoiPondConstructionManagement.Pages.Manager.Admin.Service
             return new JsonResult(serviceResponse);
         }
 
+        /// <summary>
+        /// Xử lý upload file
+        /// </summary>
+        /// <param name="upload"></param>
+        /// <returns></returns>
         public async Task<IActionResult> OnPostUploadFile(IFormFile upload)
         {
             if (upload != null && upload.Length > 0)

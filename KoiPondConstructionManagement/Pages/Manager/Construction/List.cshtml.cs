@@ -3,12 +3,14 @@ using Domain.Enums;
 using Domain.Extension;
 using Domain.ResponseData;
 using Infrastructure.Data;
+using KoiPondConstructionManagement.Middleware;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 namespace KoiPondConstructionManagement.Pages.Manager.Construction
 {
+    [AuthorizeRole(Domain.Enums.AppRoles.Construction_Staff)]
     public class ListModel : PageModel
     {
         private KoiPondConstructionManagementContext _context;
@@ -42,7 +44,7 @@ namespace KoiPondConstructionManagement.Pages.Manager.Construction
                     .ThenInclude(x => x.Customer)
                 .Include(x => x.Request)
                     .ThenInclude(x => x.MaintenanceService)
-                .OrderBy(x => x.CreatedAt)
+                .OrderByDescending(x => x.CreatedAt)
                 .GroupBy(x => x.Request)
                 .ToListAsync();
         }
@@ -61,11 +63,13 @@ namespace KoiPondConstructionManagement.Pages.Manager.Construction
                 var exists = await _context.ConstructionProcesses
                     .Where(x => processIds.Contains(x.ProcessId) && x.AssignedStaffId == User.GetUserId())
                     .ToListAsync();
+                int? requestId = 0;
+
 
                 bool hasChange = false;
                 if (exists.Count > 0)
                 {
-                    var requestId = exists.FirstOrDefault().RequestId;
+                    requestId = exists.FirstOrDefault().RequestId;
                     var request = _context.ConstructionRequests.FirstOrDefault(x => x.RequestId == requestId);
                     if (request != null && request.Status == (int)ConstructionRequestsStatus.Completed)
                     {
@@ -91,6 +95,18 @@ namespace KoiPondConstructionManagement.Pages.Manager.Construction
 
                 if (hasChange)
                 {
+                    await _context.SaveChangesAsync();
+                }
+
+                // Kiểm tra nếu tất cả các quy trình đã hoàn thành
+                var allCompleted = await _context.ConstructionProcesses
+                    .Where(x => x.RequestId == requestId)
+                    .AllAsync(x => x.Status == (int)ConstructionProcessStatus.Completed);
+
+                if (allCompleted)
+                {
+                    var request = _context.ConstructionRequests.FirstOrDefault(x => x.RequestId == requestId);
+                    request.Status = (int)ConstructionRequestsStatus.Completed;
                     await _context.SaveChangesAsync();
                 }
             }
